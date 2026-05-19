@@ -1,0 +1,7 @@
+{
+  "name": "E-Saraban Thai",
+  "description": "A comprehensive government document tracking system (E-Saraban) featuring secure authentication, automated running numbers, workflow management, and audit trails, designed with a professional Thai user interface.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
