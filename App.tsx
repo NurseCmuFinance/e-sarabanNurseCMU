@@ -201,49 +201,16 @@ const App: React.FC = () => {
                  <div className="absolute -top-[20%] -right-[10%] w-[50%] h-[50%] bg-indigo-200/20 rounded-full blur-3xl"></div>
                  <div className="absolute top-[60%] -left-[10%] w-[40%] h-[40%] bg-purple-200/20 rounded-full blur-3xl"></div>
               </div>
-              <div className="w-full max-w-5xl lg:bg-white/40 lg:backdrop-blur-md lg:border lg:border-white/50 lg:rounded-3xl lg:shadow-2xl overflow-hidden grid lg:grid-cols-12 min-h-screen lg:min-h-[600px] lg:h-[700px] relative z-10">
+              <div className="w-full max-w-md bg-white/40 backdrop-blur-md border border-white/50 rounded-3xl shadow-2xl overflow-hidden relative z-10 my-8">
                 
-                {/* Left Panel: Aesthetic branding */}
-                <div className="hidden lg:flex lg:col-span-7 gradient-primary p-12 flex-col justify-between relative overflow-hidden">
-                   <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
-                   <div className="absolute -top-[20%] -left-[10%] w-[80%] h-[80%] bg-white/10 rounded-full blur-3xl"></div>
-                   <div className="absolute -bottom-[20%] -right-[10%] w-[80%] h-[80%] bg-white/10 rounded-full blur-3xl"></div>
-                   
-                   <div className="relative z-10 flex items-center gap-3 animate-fade-in-down">
-                      <div className="w-10 h-10 bg-white/20 backdrop-blur-md text-white rounded-xl flex items-center justify-center font-bold text-xl border border-white/20 shadow-md">E</div>
-                      <span className="font-extrabold text-xl text-white tracking-wide">E-Saraban 2026</span>
-                   </div>
-                   
-                   <div className="relative z-10 my-auto space-y-6 animate-fade-in-up">
-                      <h2 className="text-4xl font-extrabold text-white leading-tight">ระบบสารบรรณอิเล็กทรอนิกส์<br/>ยุคใหม่ เพื่อการทำงานที่รวดเร็ว</h2>
-                      <p className="text-white/80 text-sm leading-relaxed max-w-md">ระบบจัดการและติดตามหนังสือราชการอัจฉริยะ ออกแบบมาเพื่อเพิ่มประสิทธิภาพในการทำงานของบุคลากรทางการพยาบาล สวยงาม ใช้งานง่าย และรวดเร็ว</p>
-                      
-                      <div className="flex gap-4 pt-4">
-                         <div className="bg-white/10 backdrop-blur-md border border-white/10 p-4 rounded-2xl flex-1 text-center">
-                            <div className="text-2xl font-black text-white">100%</div>
-                            <div className="text-[10px] text-white/75 font-semibold uppercase mt-1">Paperless Workflow</div>
-                         </div>
-                         <div className="bg-white/10 backdrop-blur-md border border-white/10 p-4 rounded-2xl flex-1 text-center">
-                            <div className="text-2xl font-black text-white">Smart OCR</div>
-                            <div className="text-[10px] text-white/75 font-semibold uppercase mt-1">AI-Powered Tech</div>
-                         </div>
-                      </div>
-                   </div>
-                   
-                   <div className="relative z-10 flex justify-between items-center text-[10px] text-white/60">
-                      <span>© 2026 Nurse CMU E-Saraban. All rights reserved.</span>
-                      <span>Version 3.0.0</span>
-                   </div>
-                </div>
-
-                {/* Right Panel: Content Form */}
-                <div className="col-span-12 lg:col-span-5 flex flex-col justify-between p-6 sm:p-10 bg-white/75 backdrop-blur-lg lg:bg-white/90 overflow-y-auto max-h-screen lg:max-h-none">
+                {/* Content Form Container */}
+                <div className="w-full flex flex-col justify-between p-6 sm:p-10 bg-white/75 backdrop-blur-lg lg:bg-white/90">
                   
-                  {/* Small header on mobile */}
-                  <div className="flex lg:hidden items-center justify-between mb-6">
+                  {/* Header logo */}
+                  <div className="flex items-center justify-between mb-6">
                      <div className="flex items-center gap-2">
                         <div className="w-8 h-8 bg-indigo-600 text-white rounded-lg flex items-center justify-center font-bold text-lg shadow-md">E</div>
-                        <span className="font-extrabold text-base text-slate-800">E-Saraban</span>
+                        <span className="font-extrabold text-base text-slate-800">E-Saraban 2026</span>
                      </div>
                      <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">v3.0.0</span>
                   </div>
