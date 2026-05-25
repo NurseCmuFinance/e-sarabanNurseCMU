@@ -8,21 +8,21 @@ export const THAI_MONTHS = [
 ];
 
 export const STATUS_CONFIG = {
-  [DocStatus.PENDING_VERIFY]: { label: 'รอตรวจสอบ (Admin)', color: 'bg-indigo-100 text-indigo-800 border border-indigo-300', icon: ShieldAlert },
-  [DocStatus.PENDING_REVIEW]: { label: 'รอรับเข้า/ตรวจสอบ', color: 'bg-slate-100 text-slate-800 border border-slate-300', icon: Inbox },
-  [DocStatus.PENDING_ACCEPT]: { label: 'รอรับหนังสือ', color: 'bg-amber-100 text-amber-800 border border-amber-300', icon: Clock },
-  [DocStatus.REGISTERED]: { label: 'รับเข้าสารบรรณแล้ว', color: 'bg-blue-100 text-blue-800', icon: FileText },
-  [DocStatus.FORWARDED]: { label: 'ส่งต่อแล้ว', color: 'bg-yellow-100 text-yellow-800', icon: Send },
-  [DocStatus.RETURNED]: { label: 'ตีกลับให้แก้ไข', color: 'bg-orange-100 text-orange-800', icon: RotateCcw },
-  [DocStatus.CANCELLED]: { label: 'ยกเลิก', color: 'bg-red-100 text-red-800', icon: XCircle },
-  [DocStatus.PROPOSING]: { label: 'อยู่ระหว่างเสนอ', color: 'bg-purple-100 text-purple-800', icon: Clock },
-  [DocStatus.APPROVED]: { label: 'อนุมัติแล้ว', color: 'bg-green-100 text-green-800', icon: CheckCircle2 },
+  [DocStatus.PENDING_VERIFY]: { label: 'รอตรวจสอบ (Admin)', color: 'bg-indigo-50 text-indigo-700 border border-indigo-100', icon: ShieldAlert },
+  [DocStatus.PENDING_REVIEW]: { label: 'รอรับเข้า/ตรวจสอบ', color: 'bg-slate-50 text-slate-700 border border-slate-150', icon: Inbox },
+  [DocStatus.PENDING_ACCEPT]: { label: 'รอรับหนังสือ', color: 'bg-amber-50 text-amber-700 border border-amber-100', icon: Clock },
+  [DocStatus.REGISTERED]: { label: 'รับเข้าสารบรรณแล้ว', color: 'bg-blue-50 text-blue-700 border border-blue-100', icon: FileText },
+  [DocStatus.FORWARDED]: { label: 'ส่งต่อแล้ว', color: 'bg-violet-50 text-violet-700 border border-violet-100', icon: Send },
+  [DocStatus.RETURNED]: { label: 'ตีกลับให้แก้ไข', color: 'bg-orange-50 text-orange-700 border border-orange-100', icon: RotateCcw },
+  [DocStatus.CANCELLED]: { label: 'ยกเลิก', color: 'bg-red-50 text-red-700 border border-red-100', icon: XCircle },
+  [DocStatus.PROPOSING]: { label: 'อยู่ระหว่างเสนอ', color: 'bg-purple-50 text-purple-700 border border-purple-100', icon: Clock },
+  [DocStatus.APPROVED]: { label: 'อนุมัติแล้ว', color: 'bg-emerald-50 text-emerald-700 border border-emerald-100', icon: CheckCircle2 },
 };
 
 export const PRIORITY_CONFIG = {
-  [DocPriority.NORMAL]: { label: 'ปกติ', color: 'bg-slate-100 text-slate-600', icon: FileText },
-  [DocPriority.URGENT]: { label: 'ด่วน', color: 'bg-red-100 text-red-600 font-bold', icon: AlertTriangle },
-  [DocPriority.EXPRESS]: { label: 'ด่วนมาก', color: 'bg-red-600 text-white font-bold animate-pulse', icon: Zap },
+  [DocPriority.NORMAL]: { label: 'ปกติ', color: 'bg-slate-50 text-slate-600 border border-slate-100', icon: FileText },
+  [DocPriority.URGENT]: { label: 'ด่วน', color: 'bg-amber-50 text-amber-700 border border-amber-100 font-bold', icon: AlertTriangle },
+  [DocPriority.EXPRESS]: { label: 'ด่วนมาก', color: 'bg-red-50 text-red-700 border border-red-100 font-bold animate-pulse', icon: Zap },
 };
 
 export const MOCK_DEPARTMENTS = [

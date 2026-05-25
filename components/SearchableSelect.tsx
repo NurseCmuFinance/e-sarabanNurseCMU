@@ -75,7 +75,7 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
       <div className="relative">
         <input
           type="text"
-          className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none pr-10"
+          className="modern-input pr-10"
           placeholder={placeholder}
           value={searchTerm}
           onChange={handleInputChange}
@@ -83,15 +83,16 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
           required={required && !value}
         />
         <ChevronDown 
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 cursor-pointer pointer-events-none" 
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 cursor-pointer pointer-events-none transition-transform duration-200" 
+            style={{ transform: isOpen ? 'translateY(-50%) rotate(180deg)' : 'translateY(-50%)' }}
             size={16} 
         />
       </div>
 
       {isOpen && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+        <div className="absolute z-50 w-full mt-1.5 bg-white/95 backdrop-blur-md border border-stone-200/50 rounded-2xl shadow-xl max-h-60 overflow-y-auto custom-scrollbar animate-fade-in-scale">
           {filteredOptions.length === 0 ? (
-            <div className="p-3 text-sm text-slate-500 text-center">
+            <div className="p-3 text-xs text-stone-500 font-bold text-center">
                 {allowCustomInput ? 'กด Enter เพื่อใช้ชื่อนี้' : 'ไม่พบข้อมูล'}
             </div>
           ) : (
@@ -99,17 +100,17 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
               <div
                 key={option.id}
                 onClick={() => handleSelect(option)}
-                className={`px-4 py-2 cursor-pointer hover:bg-blue-50 flex items-center justify-between group ${value === option.id ? 'bg-blue-50' : ''}`}
+                className={`px-4 py-2.5 cursor-pointer hover:bg-indigo-50/50 flex items-center justify-between transition-colors duration-150 group ${value === option.id ? 'bg-indigo-50/30' : ''}`}
               >
                 <div>
-                  <div className={`text-sm font-medium ${value === option.id ? 'text-blue-700' : 'text-slate-700'}`}>
+                  <div className={`text-xs font-bold ${value === option.id ? 'text-indigo-600' : 'text-stone-700'}`}>
                     {option.label}
                   </div>
                   {option.subLabel && (
-                    <div className="text-xs text-slate-500">{option.subLabel}</div>
+                    <div className="text-[10px] text-stone-400 font-medium mt-0.5">{option.subLabel}</div>
                   )}
                 </div>
-                {value === option.id && <Check size={16} className="text-blue-600" />}
+                {value === option.id && <Check size={14} className="text-indigo-600 shrink-0 ml-2" />}
               </div>
             ))
           )}

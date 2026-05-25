@@ -349,184 +349,243 @@ const Reports: React.FC<ReportsProps> = ({ user, onBack }) => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 no-print">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 no-print animate-fade-in-down">
         <div className="flex items-center gap-4">
-            {onBack && <button onClick={onBack} className="p-2 hover:bg-slate-200 rounded-full text-slate-500 transition-colors"><ArrowLeft size={24}/></button>}
+            {onBack && (
+              <button 
+                onClick={onBack} 
+                className="p-2 hover:bg-white/5 rounded-full text-slate-400 hover:text-white transition-colors"
+                title="ย้อนกลับ"
+              >
+                <ArrowLeft size={24}/>
+              </button>
+            )}
             <div>
-                <h1 className="text-2xl font-bold text-slate-800">รายงาน (Reports)</h1>
-                <p className="text-slate-500 font-medium">{user?.role === UserRole.USER ? 'สรุปการยื่นเรื่องของคุณ' : 'สรุปการรับ-ส่งเอกสารราชการ'}</p>
+                <h1 className="text-2xl font-extrabold text-white">รายงาน (Reports)</h1>
+                <p className="text-slate-400 font-medium text-sm mt-0.5">{user?.role === UserRole.USER ? 'สรุปการยื่นเรื่องของคุณ' : 'สรุปการรับ-ส่งเอกสารราชการ'}</p>
             </div>
         </div>
         <div className="flex flex-wrap gap-2">
             <button 
                 onClick={exportToExcel} 
                 disabled={documents.length === 0 || loading}
-                className="px-4 py-2.5 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50 font-bold shadow-sm"
+                className="btn btn-success px-4 py-2.5 font-bold shadow-lg shadow-emerald-500/10 active:scale-95 disabled:opacity-50"
             >
                 <FileSpreadsheet size={18} /> Excel
             </button>
             <button 
                 onClick={handlePrint} 
                 disabled={documents.length === 0 || loading}
-                className="px-4 py-2.5 bg-slate-800 text-white rounded-xl hover:bg-slate-900 flex items-center gap-2 transition-all active:scale-95 font-bold shadow-sm disabled:opacity-50"
+                className="px-4 py-2.5 bg-slate-800 text-white rounded-xl hover:bg-slate-700 hover:shadow-lg transition-all active:scale-95 font-bold shadow-md disabled:opacity-50 border border-slate-700/50 flex items-center gap-2"
             >
                 <Printer size={18} /> พิมพ์
             </button>
             <button 
                 onClick={handleOpenPDFWindow} 
                 disabled={documents.length === 0 || loading}
-                className="px-4 py-2.5 bg-white border border-slate-300 text-red-600 rounded-xl hover:bg-red-50 flex items-center gap-2 transition-all active:scale-95 font-bold shadow-sm disabled:opacity-50"
+                className="px-4 py-2.5 bg-rose-500/10 border border-rose-500/30 text-rose-300 rounded-xl hover:bg-rose-500/20 flex items-center gap-2 transition-all active:scale-95 font-bold shadow-md disabled:opacity-50 hover:text-rose-200"
             >
                 <FileText size={18} /> PDF
             </button>
         </div>
       </div>
-
+ 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded-xl flex items-center gap-3 animate-in fade-in slide-in-from-top-2 no-print">
-            <AlertCircle size={20}/>
+        <div className="bg-red-500/10 border border-red-500/30 text-red-300 p-4 rounded-xl flex items-center gap-3 animate-fade-in no-print">
+            <AlertCircle size={20} className="text-red-400"/>
             <span className="font-bold">{error}</span>
-            <button onClick={() => setError(null)} className="ml-auto opacity-50 hover:opacity-100"><X size={18}/></button>
+            <button onClick={() => setError(null)} className="ml-auto opacity-50 hover:opacity-100 text-white"><X size={18}/></button>
         </div>
       )}
-
+ 
       {/* Filter Section - No print */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 no-print">
+      <div className="glass-card border border-indigo-500/10 shadow-xl p-6 no-print bg-slate-900/40 backdrop-blur-md animate-fade-in-up">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-end">
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-500 uppercase px-1">ตั้งแต่วันที่</label>
-            <input type="date" className="w-full px-4 py-2.5 border rounded-xl outline-none bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 transition-all" value={startDate} onChange={e => setStartDate(e.target.value)} />
+          <div className="space-y-1.5">
+            <label className="text-xs font-extrabold text-indigo-300 uppercase px-1 tracking-wider">ตั้งแต่วันที่</label>
+            <input 
+              type="date" 
+              className="w-full px-4 py-2.5 border border-indigo-500/20 rounded-xl outline-none bg-slate-950/40 text-white focus:bg-slate-900/60 focus:border-indigo-500 transition-all font-medium" 
+              value={startDate} 
+              onChange={e => setStartDate(e.target.value)} 
+            />
           </div>
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-500 uppercase px-1">ถึงวันที่</label>
-            <input type="date" className="w-full px-4 py-2.5 border rounded-xl outline-none bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 transition-all" value={endDate} onChange={e => setEndDate(e.target.value)} />
+          <div className="space-y-1.5">
+            <label className="text-xs font-extrabold text-indigo-300 uppercase px-1 tracking-wider">ถึงวันที่</label>
+            <input 
+              type="date" 
+              className="w-full px-4 py-2.5 border border-indigo-500/20 rounded-xl outline-none bg-slate-950/40 text-white focus:bg-slate-900/60 focus:border-indigo-500 transition-all font-medium" 
+              value={endDate} 
+              onChange={e => setEndDate(e.target.value)} 
+            />
           </div>
-
-          <div className="space-y-1 relative" ref={deptDropdownRef}>
-            <label className="text-xs font-bold text-slate-500 uppercase px-1">แผนก</label>
-            <button onClick={() => setShowDeptDropdown(!showDeptDropdown)} className="w-full px-4 py-2.5 border rounded-xl bg-white flex items-center justify-between text-sm font-medium hover:border-blue-400">
+ 
+          <div className="space-y-1.5 relative" ref={deptDropdownRef}>
+            <label className="text-xs font-extrabold text-indigo-300 uppercase px-1 tracking-wider">แผนก</label>
+            <button 
+              onClick={() => setShowDeptDropdown(!showDeptDropdown)} 
+              className="w-full px-4 py-2.5 border border-indigo-500/20 rounded-xl bg-slate-950/40 text-white flex items-center justify-between text-sm font-medium hover:border-indigo-500/50 hover:bg-slate-900/40 transition-all"
+            >
                 <span className="truncate">{selectedDepartmentIds.length === 0 ? '-- ทั้งหมด --' : `${selectedDepartmentIds.length} แผนก`}</span>
-                <ChevronDown size={16} />
+                <ChevronDown size={16} className="text-slate-400" />
             </button>
             {showDeptDropdown && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white border rounded-xl shadow-xl z-50 max-h-60 overflow-y-auto">
-                    {filteredDepts.map(dept => (
-                        <label key={dept.id} className="flex items-center gap-3 px-4 py-2 hover:bg-slate-50 cursor-pointer">
-                            <input type="checkbox" checked={selectedDepartmentIds.includes(dept.id)} onChange={() => toggleDept(dept.id)} />
-                            <span className="text-sm">{dept.name}</span>
-                        </label>
-                    ))}
+                <div className="absolute top-full left-0 right-0 mt-2 bg-slate-900/90 border border-indigo-500/20 rounded-xl shadow-2xl z-50 max-h-60 overflow-y-auto custom-scrollbar backdrop-blur-xl animate-fade-in-scale">
+                    {filteredDepts.length === 0 ? (
+                        <p className="p-3 text-slate-500 text-xs text-center">ไม่พบแผนก</p>
+                    ) : (
+                        filteredDepts.map(dept => (
+                            <label key={dept.id} className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 cursor-pointer text-white transition-colors">
+                                <input 
+                                  type="checkbox" 
+                                  className="rounded border-slate-700 bg-slate-950 text-indigo-600 focus:ring-indigo-500"
+                                  checked={selectedDepartmentIds.includes(dept.id)} 
+                                  onChange={() => toggleDept(dept.id)} 
+                                />
+                                <span className="text-sm font-medium">{dept.name}</span>
+                            </label>
+                        ))
+                    )}
                 </div>
             )}
           </div>
-
-          <div className="space-y-1 relative" ref={recipientDropdownRef}>
-            <label className="text-xs font-bold text-slate-500 uppercase px-1">ผู้รับ</label>
-            <button onClick={() => setShowRecipientDropdown(!showRecipientDropdown)} className="w-full px-4 py-2.5 border rounded-xl bg-white flex items-center justify-between text-sm font-medium hover:border-blue-400">
+ 
+          <div className="space-y-1.5 relative" ref={recipientDropdownRef}>
+            <label className="text-xs font-extrabold text-indigo-300 uppercase px-1 tracking-wider">ผู้รับ</label>
+            <button 
+              onClick={() => setShowRecipientDropdown(!showRecipientDropdown)} 
+              className="w-full px-4 py-2.5 border border-indigo-500/20 rounded-xl bg-slate-950/40 text-white flex items-center justify-between text-sm font-medium hover:border-indigo-500/50 hover:bg-slate-900/40 transition-all"
+            >
                 <span className="truncate">{selectedRecipientIds.length === 0 ? '-- ทั้งหมด --' : `${selectedRecipientIds.length} รายชื่อ`}</span>
-                <ChevronDown size={16} />
+                <ChevronDown size={16} className="text-slate-400" />
             </button>
             {showRecipientDropdown && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white border rounded-xl shadow-xl z-50 max-h-60 overflow-y-auto">
-                    {filteredUsers.map(u => (
-                        <label key={u.id} className="flex items-center gap-3 px-4 py-2 hover:bg-slate-50 cursor-pointer">
-                            <input type="checkbox" checked={selectedRecipientIds.includes(u.id)} onChange={() => toggleRecipient(u.id)} />
-                            <span className="text-sm">{u.full_name}</span>
-                        </label>
-                    ))}
+                <div className="absolute top-full left-0 right-0 mt-2 bg-slate-900/90 border border-indigo-500/20 rounded-xl shadow-2xl z-50 max-h-60 overflow-y-auto custom-scrollbar backdrop-blur-xl animate-fade-in-scale">
+                    {filteredUsers.length === 0 ? (
+                        <p className="p-3 text-slate-500 text-xs text-center">ไม่พบรายชื่อ</p>
+                    ) : (
+                        filteredUsers.map(u => (
+                            <label key={u.id} className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 cursor-pointer text-white transition-colors">
+                                <input 
+                                  type="checkbox" 
+                                  className="rounded border-slate-700 bg-slate-950 text-indigo-600 focus:ring-indigo-500"
+                                  checked={selectedRecipientIds.includes(u.id)} 
+                                  onChange={() => toggleRecipient(u.id)} 
+                                />
+                                <span className="text-sm font-medium">{u.full_name}</span>
+                            </label>
+                        ))
+                    )}
                 </div>
             )}
           </div>
-
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-500 uppercase px-1">ความเร่งด่วน</label>
-            <select className="w-full px-4 py-2.5 border rounded-xl outline-none bg-white text-sm" value={selectedPriority} onChange={e => setSelectedPriority(e.target.value as DocPriority)}>
-              <option value="">-- ทั้งหมด --</option>
-              {Object.entries(PRIORITY_CONFIG).map(([key, cfg]) => <option key={key} value={key}>{cfg.label}</option>)}
+ 
+          <div className="space-y-1.5">
+            <label className="text-xs font-extrabold text-indigo-300 uppercase px-1 tracking-wider">ความเร่งด่วน</label>
+            <select 
+              className="w-full px-4 py-2.5 border border-indigo-500/20 rounded-xl outline-none bg-slate-950/40 text-white focus:bg-slate-900 focus:border-indigo-500 transition-all text-sm font-medium cursor-pointer" 
+              value={selectedPriority} 
+              onChange={e => setSelectedPriority(e.target.value as DocPriority)}
+            >
+              <option value="" className="bg-slate-900 text-white">-- ทั้งหมด --</option>
+              {Object.entries(PRIORITY_CONFIG).map(([key, cfg]) => <option key={key} value={key} className="bg-slate-900 text-white">{cfg.label}</option>)}
             </select>
           </div>
-
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-500 uppercase px-1">สถานะ</label>
-            <select className="w-full px-4 py-2.5 border rounded-xl outline-none bg-white text-sm" value={selectedStatus} onChange={e => setSelectedStatus(e.target.value as DocStatus)}>
-              <option value="">-- ทั้งหมด --</option>
-              {Object.entries(STATUS_CONFIG).map(([key, cfg]) => <option key={key} value={key}>{cfg.label}</option>)}
+ 
+          <div className="space-y-1.5">
+            <label className="text-xs font-extrabold text-indigo-300 uppercase px-1 tracking-wider">สถานะ</label>
+            <select 
+              className="w-full px-4 py-2.5 border border-indigo-500/20 rounded-xl outline-none bg-slate-950/40 text-white focus:bg-slate-900 focus:border-indigo-500 transition-all text-sm font-medium cursor-pointer" 
+              value={selectedStatus} 
+              onChange={e => setSelectedStatus(e.target.value as DocStatus)}
+            >
+              <option value="" className="bg-slate-900 text-white">-- ทั้งหมด --</option>
+              {Object.entries(STATUS_CONFIG).map(([key, cfg]) => <option key={key} value={key} className="bg-slate-900 text-white">{cfg.label}</option>)}
             </select>
           </div>
-
+ 
           <div className="lg:col-span-3 flex justify-center mt-4">
-            <button onClick={handleGenerate} disabled={loading} className="px-10 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50 font-bold shadow-lg shadow-blue-100 w-full sm:w-auto justify-center">
+            <button 
+              onClick={handleGenerate} 
+              disabled={loading} 
+              className="btn btn-primary px-10 py-3 font-bold w-full sm:w-auto justify-center shadow-lg shadow-indigo-500/20 active:scale-95"
+            >
               {loading ? <Loader2 className="animate-spin" size={18}/> : <Filter size={18} />} แสดงข้อมูลรายงาน
             </button>
           </div>
         </div>
       </div>
-
+ 
       {/* Report View Area */}
-      <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm" ref={printAreaRef} id="report-print-container">
-        <div className="p-10 flex flex-col items-center bg-white border-b text-center print:border-none">
+      <div className="glass-card border border-indigo-500/10 overflow-hidden shadow-2xl animate-fade-in-up" ref={printAreaRef} id="report-print-container">
+        <div className="p-10 flex flex-col items-center bg-slate-950/30 border-b border-indigo-500/10 text-center print:bg-white print:border-slate-300">
             <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-bold text-2xl print:bg-slate-800 print:text-white print:border">E</div>
-                <h2 className="font-bold text-slate-800 text-2xl">ระบบสารบรรณอิเล็กทรอนิกส์ (E-Saraban)</h2>
+                <div className="w-12 h-12 bg-gradient-to-tr from-indigo-600 to-violet-600 rounded-2xl flex items-center justify-center text-white font-extrabold text-2xl border border-indigo-400/20 print:bg-slate-800 print:text-white print:border">E</div>
+                <h2 className="font-extrabold text-white text-2xl print:text-black">ระบบสารบรรณอิเล็กทรอนิกส์ (E-Saraban)</h2>
             </div>
-            <h3 className="font-bold text-slate-700 text-xl mb-1">รายงานสรุปข้อมูลเอกสาร {user?.role === UserRole.USER ? `ของคุณ ${user.full_name}` : ''}</h3>
-            <p className="text-slate-500 text-sm">ประจำวันที่ {new Date(startDate).toLocaleDateString('th-TH', { dateStyle: 'long' })} ถึง {new Date(endDate).toLocaleDateString('th-TH', { dateStyle: 'long' })}</p>
-            <div className="mt-4 bg-slate-100 px-4 py-1.5 rounded-full text-xs font-bold text-slate-600 border border-slate-200 uppercase print:bg-transparent print:border-none">รวมทั้งสิ้น {documents.length} รายการ</div>
+            <h3 className="font-bold text-slate-200 text-xl mb-1 print:text-slate-800">รายงานสรุปข้อมูลเอกสาร {user?.role === UserRole.USER ? `ของคุณ ${user.full_name}` : ''}</h3>
+            <p className="text-slate-400 text-sm print:text-slate-500">ประจำวันที่ {new Date(startDate).toLocaleDateString('th-TH', { dateStyle: 'long' })} ถึง {new Date(endDate).toLocaleDateString('th-TH', { dateStyle: 'long' })}</p>
+            <div className="mt-4 bg-indigo-500/10 px-4 py-1.5 rounded-full text-xs font-bold text-indigo-300 border border-indigo-500/20 uppercase print:bg-transparent print:border-none print:text-slate-600">
+              รวมทั้งสิ้น {documents.length} รายการ
+            </div>
         </div>
         
         <div className="p-4 print:p-0">
-            <table className="w-full text-sm text-left border-collapse pdf-optimized-table">
+            <table className="modern-table text-sm text-left border-collapse pdf-optimized-table">
               <thead>
-                <tr className="bg-slate-800 text-white print:bg-slate-100 print:text-black">
-                  <th className="px-3 py-4 border border-slate-700 print:border-slate-300 text-center" style={{ width: '50px' }}>ลำดับ</th>
-                  <th className="px-3 py-4 border border-slate-700 print:border-slate-300 text-center" style={{ width: '120px' }}>เลขรับ/ยื่น</th>
-                  <th className="px-3 py-4 border border-slate-700 print:border-slate-300 text-center" style={{ width: '110px' }}>ลงวันที่</th>
-                  <th className="px-3 py-4 border border-slate-700 print:border-slate-300" style={{ width: 'auto' }}>เรื่อง</th>
-                  <th className="px-3 py-4 border border-slate-700 print:border-slate-300" style={{ width: '180px' }}>ผู้รับ/เสนอ</th>
-                  <th className="px-3 py-4 border border-slate-700 print:border-slate-300 text-center" style={{ width: '80px' }}>ความเร่งด่วน</th>
-                  <th className="px-3 py-4 border border-slate-700 print:border-slate-300 text-center" style={{ width: '130px' }}>สถานะ</th>
-                  <th className="px-3 py-4 border border-slate-700 print:border-slate-300 text-center" style={{ width: '70px' }}>QR</th>
-                  <th className="px-3 py-4 border border-slate-700 print:border-slate-300 text-center" style={{ width: '120px' }}>หมายเหตุ</th>
+                <tr className="bg-slate-950/50 text-indigo-300 border-b border-indigo-500/10 print:bg-slate-100 print:text-black print:border-slate-300">
+                  <th className="px-3 py-4 text-center" style={{ width: '50px' }}>ลำดับ</th>
+                  <th className="px-3 py-4 text-center" style={{ width: '125px' }}>เลขรับ/ยื่น</th>
+                  <th className="px-3 py-4 text-center" style={{ width: '110px' }}>ลงวันที่</th>
+                  <th className="px-3 py-4" style={{ width: 'auto' }}>เรื่อง</th>
+                  <th className="px-3 py-4" style={{ width: '180px' }}>ผู้รับ/เสนอ</th>
+                  <th className="px-3 py-4 text-center" style={{ width: '90px' }}>ความเร่งด่วน</th>
+                  <th className="px-3 py-4 text-center" style={{ width: '135px' }}>สถานะ</th>
+                  <th className="px-3 py-4 text-center" style={{ width: '70px' }}>QR</th>
+                  <th className="px-3 py-4 text-center" style={{ width: '120px' }}>หมายเหตุ</th>
                 </tr>
               </thead>
-              <tbody className="bg-white">
+              <tbody>
                 {documents.length === 0 ? (
-                    <tr><td colSpan={9} className="px-6 py-12 text-center text-slate-400 font-bold border">ไม่พบข้อมูล</td></tr>
+                    <tr><td colSpan={9} className="px-6 py-12 text-center text-slate-500 font-bold border border-indigo-500/5 print:border-slate-300">ไม่พบข้อมูลรายงานสำหรับเงื่อนไขนี้</td></tr>
                 ) : documents.map((doc, idx) => {
                     const priority = doc.priority || DocPriority.NORMAL;
                     const isUrgent = priority !== DocPriority.NORMAL;
                     return (
-                      <tr key={doc.id}>
-                        <td className="px-3 py-4 border border-slate-200 print:border-slate-300 text-center text-slate-500 font-mono">{idx + 1}</td>
-                        <td className="px-3 py-4 border border-slate-200 print:border-slate-300 font-bold text-blue-700 print:text-black text-center">{doc.book_no ? `${doc.book_no}/${doc.book_year}` : doc.tracking_code}</td>
-                        <td className="px-3 py-4 border border-slate-200 print:border-slate-300 text-slate-600 text-center">{new Date(doc.doc_date).toLocaleDateString('th-TH')}</td>
-                        <td className="px-3 py-4 border border-slate-200 print:border-slate-300 text-slate-800 subject-cell">
+                      <tr key={doc.id} className="border-b border-indigo-500/5 hover:bg-indigo-600/5 transition-all print:border-slate-200">
+                        <td className="px-3 py-4 text-center text-slate-400 font-mono text-xs">{idx + 1}</td>
+                        <td className="px-3 py-4 font-bold text-indigo-400 print:text-black text-center text-xs">
+                          {doc.book_no ? `${doc.book_no}/${doc.book_year}` : doc.tracking_code}
+                        </td>
+                        <td className="px-3 py-4 text-slate-300 print:text-slate-700 text-center text-xs">{new Date(doc.doc_date).toLocaleDateString('th-TH')}</td>
+                        <td className="px-3 py-4 text-white print:text-black subject-cell font-medium text-xs leading-relaxed">
                             {doc.subject}
                         </td>
-                        <td className="px-3 py-4 border border-slate-200 print:border-slate-300 text-slate-700">{doc.recipient_name || '-'}</td>
-                        <td className="px-3 py-4 border border-slate-200 print:border-slate-300 text-center">
+                        <td className="px-3 py-4 text-slate-300 print:text-slate-700 text-xs">{doc.recipient_name || '-'}</td>
+                        <td className="px-3 py-4 text-center text-xs">
                             {isUrgent ? (
-                                <span className="text-red-600 font-bold flex items-center justify-center gap-1">
-                                    <Zap size={12} className="print:hidden"/> {PRIORITY_CONFIG[priority]?.label}
+                                <span className="text-red-400 font-bold flex items-center justify-center gap-1 print:text-red-600">
+                                    <Zap size={12} className="print:hidden text-red-400"/> {PRIORITY_CONFIG[priority]?.label}
                                 </span>
                             ) : (
-                                <span className="text-slate-500">{PRIORITY_CONFIG[priority]?.label}</span>
+                                <span className="text-slate-400 print:text-slate-500">{PRIORITY_CONFIG[priority]?.label}</span>
                             )}
                         </td>
-                        <td className="px-3 py-4 border border-slate-200 print:border-slate-300 text-center">
-                            <span className="text-xs font-bold text-slate-600 uppercase">
+                        <td className="px-3 py-4 text-center text-xs">
+                            <span className="text-xs font-bold text-slate-300 print:text-slate-800 uppercase bg-slate-800/40 px-2.5 py-1 rounded-md border border-slate-700/50 print:bg-transparent print:border-none print:p-0">
                                 {STATUS_CONFIG[doc.status]?.label || doc.status}
                             </span>
                         </td>
-                        <td className="px-2 py-2 border border-slate-200 print:border-slate-300 text-center qr-cell">
+                        <td className="px-2 py-2 text-center qr-cell">
                             <img 
                                 src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${doc.tracking_code}`} 
                                 alt="QR" 
+                                className="border border-indigo-500/25 rounded-md p-0.5 bg-white print:border-none print:p-0"
                                 style={{ width: '40px', height: '40px', display: 'block', margin: '0 auto' }} 
                             />
                         </td>
-                        <td className="px-3 py-4 border border-slate-200 print:border-slate-300 text-left text-xs text-slate-600 break-words whitespace-pre-wrap">
-                            {doc.remark || ''}
+                        <td className="px-3 py-4 text-left text-xs text-slate-400 print:text-slate-600 break-words whitespace-pre-wrap leading-relaxed">
+                            {doc.remark || '-'}
                         </td>
                       </tr>
                     );
@@ -535,7 +594,7 @@ const Reports: React.FC<ReportsProps> = ({ user, onBack }) => {
             </table>
         </div>
       </div>
-
+ 
       <style>{`
         .subject-cell { 
             white-space: normal; 
@@ -546,7 +605,7 @@ const Reports: React.FC<ReportsProps> = ({ user, onBack }) => {
             vertical-align: middle !important;
             text-align: center;
         }
-
+ 
         @media print {
             @page {
                 size: landscape;
@@ -554,19 +613,19 @@ const Reports: React.FC<ReportsProps> = ({ user, onBack }) => {
             }
             
             body {
-                background-color: white;
+                background-color: white !important;
             }
-
+ 
             /* Hide Sidebar, Header, and Filter controls */
             body > * {
                 visibility: hidden;
             }
-
+ 
             /* Show only the report container */
             #report-print-container, #report-print-container * {
                 visibility: visible;
             }
-
+ 
             #report-print-container {
                 position: absolute;
                 top: 0;
@@ -576,8 +635,9 @@ const Reports: React.FC<ReportsProps> = ({ user, onBack }) => {
                 padding: 0;
                 border: none !important;
                 box-shadow: none !important;
+                background-color: white !important;
             }
-
+ 
             .no-print {
                 display: none !important;
             }
@@ -601,7 +661,7 @@ const Reports: React.FC<ReportsProps> = ({ user, onBack }) => {
                 overflow-wrap: break-word !important;
                 word-break: break-word !important;
             }
-
+ 
             th {
                 background-color: #f1f5f9 !important; /* slate-100 */
                 font-weight: bold !important;
@@ -613,7 +673,7 @@ const Reports: React.FC<ReportsProps> = ({ user, onBack }) => {
                 white-space: normal !important;
                 text-align: left !important;
             }
-
+ 
             * {
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;

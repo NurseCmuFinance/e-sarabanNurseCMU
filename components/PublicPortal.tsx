@@ -225,153 +225,362 @@ const PublicPortal: React.FC = () => {
 
   if (!user && (view === 'login' || view === 'register' || view === 'public_search')) {
       return (
-        <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4 font-sans relative">
+        <div className="min-h-screen bg-stone-100 flex items-center justify-center p-4 font-sans relative overflow-hidden">
+            {/* Ambient Background Glows */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-0 right-0 w-[50%] h-[50%] bg-green-100/40 rounded-full blur-3xl translate-x-1/4 -translate-y-1/4"></div>
-                <div className="absolute bottom-0 left-0 w-[50%] h-[50%] bg-blue-100/40 rounded-full blur-3xl -translate-x-1/4 translate-y-1/4"></div>
+                <div className="absolute top-0 right-0 w-[50%] h-[50%] bg-indigo-200/30 rounded-full blur-3xl translate-x-1/4 -translate-y-1/4"></div>
+                <div className="absolute bottom-0 left-0 w-[50%] h-[50%] bg-purple-200/30 rounded-full blur-3xl -translate-x-1/4 translate-y-1/4"></div>
             </div>
-            <div className="w-full max-w-lg relative z-10">
-                <div className="flex justify-between items-center mb-6 px-2">
-                    <Link to="/" className="inline-flex items-center gap-2 text-slate-500 hover:text-blue-600 font-bold text-sm transition-colors"><ArrowLeft size={16}/> กลับหน้าหลัก</Link>
-                    {view !== 'login' && <button onClick={() => setView('login')} className="text-slate-500 hover:text-blue-600 font-bold text-sm">เข้าสู่ระบบสมาชิก</button>}
+            
+            <div className="w-full max-w-lg relative z-10 space-y-4">
+                <div className="flex justify-between items-center px-2">
+                    <Link to="/" className="inline-flex items-center gap-1.5 text-stone-500 hover:text-indigo-600 font-bold text-xs transition-colors">
+                        <ArrowLeft size={14}/> กลับหน้าหลัก
+                    </Link>
+                    {view !== 'login' && (
+                        <button onClick={() => setView('login')} className="text-stone-500 hover:text-indigo-600 font-bold text-xs transition-colors">
+                            เข้าสู่ระบบสมาชิก
+                        </button>
+                    )}
                 </div>
                 
-                <div className="bg-white p-8 rounded-3xl shadow-xl border border-white/50 backdrop-blur-sm">
+                <div className="glass-card p-8 md:p-10 border border-white/50 shadow-2xl relative overflow-hidden rounded-3xl">
+                    <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
+
                     {view === 'public_search' ? (
-                        <>
-                            <div className="text-center mb-8">
-                                <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 font-bold text-3xl shadow-md"><Search size={36} /></div>
-                                <h1 className="text-2xl font-bold text-slate-800">ติดตามสถานะหนังสือ</h1>
-                                <p className="text-slate-500 text-sm">กรอกข้อมูลเพื่อดูรายละเอียด</p>
+                        <div className="space-y-6">
+                            <div className="text-center mb-6">
+                                <div className="w-16 h-16 bg-gradient-to-tr from-indigo-500/10 to-purple-500/10 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-indigo-200/30 shadow-inner relative animate-float">
+                                    <Search size={28} />
+                                </div>
+                                <h1 className="text-xl font-extrabold text-stone-850">ติดตามสถานะหนังสือ</h1>
+                                <p className="text-stone-500 text-xs font-semibold mt-1">กรอก Tracking Code หรือเลขหนังสือเพื่อดูสถานะ</p>
                             </div>
                             
-                            <form onSubmit={handlePublicTrackSearch} className="relative mb-6">
-                                <input 
-                                    type="text" 
-                                    className="w-full pl-12 pr-4 py-4 border-2 border-slate-200 rounded-2xl outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all font-mono font-bold text-left text-lg text-slate-700" 
-                                    placeholder="Tracking Code / เลขที่หนังสือ"
-                                    value={trackCode}
-                                    onChange={e => setTrackCode(e.target.value)}
-                                />
-                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={24}/>
-                                <button type="submit" disabled={searching} className="absolute right-2 top-2 bottom-2 bg-blue-600 text-white px-6 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-md active:scale-95 disabled:opacity-50">
-                                    {searching ? <Loader2 className="animate-spin" /> : 'ค้นหา'}
-                                </button>
+                            <form onSubmit={handlePublicTrackSearch} className="relative">
+                                <div className="relative">
+                                    <input 
+                                        type="text" 
+                                        className="modern-input pl-12 pr-28 py-4 font-mono font-bold text-sm tracking-wider uppercase" 
+                                        placeholder="TRACKING CODE"
+                                        value={trackCode}
+                                        onChange={e => setTrackCode(e.target.value)}
+                                        required
+                                    />
+                                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400" size={18}/>
+                                    <button 
+                                        type="submit" 
+                                        disabled={searching} 
+                                        className="absolute right-2 top-2 bottom-2 btn btn-primary font-bold px-5 rounded-xl text-xs flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-50"
+                                    >
+                                        {searching ? <Loader2 className="animate-spin" size={14} /> : 'ค้นหา'}
+                                    </button>
+                                </div>
                             </form>
 
-                            {error && <div className="bg-red-50 text-red-600 p-4 rounded-xl text-center font-bold mb-6 animate-pulse border border-red-100">{error}</div>}
+                            {error && (
+                                <div className="bg-rose-50 text-rose-700 p-4 rounded-xl text-center text-xs font-extrabold border border-rose-200 animate-pulse">
+                                    {error}
+                                </div>
+                            )}
 
                             {trackResult && (
-                                <div className="animate-in slide-in-from-bottom-4 fade-in duration-300 space-y-6">
-                                    <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200">
-                                        <div className="flex justify-between items-start mb-4">
-                                            <h3 className="font-bold text-lg text-slate-800 leading-snug">{trackResult.subject}</h3>
+                                <div className="animate-fade-in space-y-6">
+                                    <div className="bg-stone-50/50 p-6 rounded-2xl border border-stone-200/60 shadow-inner space-y-4">
+                                        <div className="flex justify-between items-start gap-4">
+                                            <h3 className="font-extrabold text-sm text-stone-850 leading-relaxed">{trackResult.subject}</h3>
                                             <StatusBadge status={trackResult.status} />
                                         </div>
-                                        <div className="grid grid-cols-2 gap-4 text-sm">
-                                            <div><p className="text-[10px] text-slate-400 font-bold uppercase">เลขรับ</p><p className="font-bold text-slate-700">{trackResult.book_no ? `${trackResult.book_no}/${trackResult.book_year}` : '-'}</p></div>
-                                            <div><p className="text-[10px] text-slate-400 font-bold uppercase">เลขที่หนังสือ</p><p className="font-bold text-slate-700">{trackResult.external_book_no || '-'}</p></div>
-                                            <div><p className="text-[10px] text-slate-400 font-bold uppercase">วันที่ลง</p><p className="font-bold text-slate-700">{new Date(trackResult.doc_date).toLocaleDateString('th-TH')}</p></div>
-                                            <div><p className="text-[10px] text-slate-400 font-bold uppercase">Tracking Code</p><p className="font-mono text-slate-700">{trackResult.tracking_code}</p></div>
-                                            <div className="col-span-2"><p className="text-[10px] text-slate-400 font-bold uppercase">จาก</p><p className="font-bold text-slate-700">{trackResult.from_origin}</p></div>
-                                            <div className="col-span-2"><p className="text-[10px] text-slate-400 font-bold uppercase">ถึง</p><p className="font-bold text-slate-700">{trackResult.recipient_name || '-'}</p></div>
+                                        
+                                        <div className="grid grid-cols-2 gap-x-4 gap-y-3.5 text-xs border-t border-stone-200/60 pt-4">
+                                            <div>
+                                                <p className="text-[10px] text-stone-400 font-extrabold uppercase tracking-wide">เลขรับในระบบ</p>
+                                                <p className="font-bold text-stone-700 mt-0.5">{trackResult.book_no ? `${trackResult.book_no}/${trackResult.book_year}` : '-'}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] text-stone-400 font-extrabold uppercase tracking-wide">เลขที่หนังสือ</p>
+                                                <p className="font-bold text-stone-700 mt-0.5">{trackResult.external_book_no || '-'}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] text-stone-400 font-extrabold uppercase tracking-wide">วันที่ลงหนังสือ</p>
+                                                <p className="font-bold text-stone-700 mt-0.5">{new Date(trackResult.doc_date).toLocaleDateString('th-TH')}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] text-stone-400 font-extrabold uppercase tracking-wide">Tracking Code</p>
+                                                <p className="font-mono font-bold text-indigo-600 mt-0.5">{trackResult.tracking_code}</p>
+                                            </div>
+                                            <div className="col-span-2">
+                                                <p className="text-[10px] text-stone-400 font-extrabold uppercase tracking-wide">จาก (หน่วยงานผู้ส่ง)</p>
+                                                <p className="font-bold text-stone-700 mt-0.5">{trackResult.from_origin}</p>
+                                            </div>
+                                            <div className="col-span-2">
+                                                <p className="text-[10px] text-stone-400 font-extrabold uppercase tracking-wide">ถึง (เจ้าหน้าที่ผู้รับผิดชอบ)</p>
+                                                <p className="font-bold text-stone-700 mt-0.5">{trackResult.recipient_name || '-'}</p>
+                                            </div>
                                         </div>
 
                                         {/* Attachments for Public Search */}
                                         {(trackResult.attachment_url || trackResult.approved_attachment_url) && (
-                                            <div className="mt-4 pt-4 border-t border-slate-200 grid grid-cols-1 gap-2">
-                                                {trackResult.attachment_url && (
-                                                    <button onClick={() => openPdf(trackResult.attachment_url!)} className="w-full flex items-center justify-between p-3 bg-white border border-blue-200 rounded-xl hover:bg-blue-50 transition-colors group text-left shadow-sm">
-                                                        <div className="flex items-center gap-3"><div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center"><FileText size={16}/></div><span className="text-xs font-bold text-slate-700">เอกสารต้นฉบับ</span></div>
-                                                        <span className="text-blue-600 bg-blue-50 px-2 py-1 rounded text-[10px] font-bold border border-blue-100 group-hover:bg-white flex items-center gap-1"><Eye size={12}/> เปิดดู</span>
-                                                    </button>
-                                                )}
+                                            <div className="mt-4 pt-4 border-t border-stone-200/60 space-y-2">
+                                                <p className="text-[10px] text-stone-400 font-extrabold uppercase tracking-wide mb-2">ไฟล์แนบ</p>
+                                                {(() => {
+                                                    if (!trackResult.attachment_url) return null;
+                                                    let parsed: { name: string, url: string }[] = [];
+                                                    try {
+                                                        if (trackResult.attachment_url.startsWith('[')) {
+                                                            parsed = JSON.parse(trackResult.attachment_url);
+                                                        } else {
+                                                            parsed = [{ name: 'เอกสารต้นฉบับ.pdf', url: trackResult.attachment_url }];
+                                                        }
+                                                    } catch (e) {
+                                                        parsed = [{ name: 'เอกสารต้นฉบับ.pdf', url: trackResult.attachment_url }];
+                                                    }
+
+                                                    return parsed.map((file, i) => (
+                                                        <button 
+                                                            key={i} 
+                                                            onClick={() => openPdf(file.url)} 
+                                                            className="w-full flex items-center justify-between p-3 bg-white hover:bg-stone-50 border border-stone-200 rounded-xl transition-all group text-left shadow-sm"
+                                                        >
+                                                            <div className="flex items-center gap-3 min-w-0 mr-4 flex-1">
+                                                                <div className="w-8 h-8 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center shrink-0">
+                                                                    <FileText size={16}/>
+                                                                </div>
+                                                                <span className="text-xs font-bold text-stone-700 truncate" title={file.name}>{file.name}</span>
+                                                            </div>
+                                                            <span className="text-indigo-600 bg-indigo-50 px-2 py-1 rounded text-[10px] font-extrabold border border-indigo-100 group-hover:bg-indigo-600 group-hover:text-white transition-all flex items-center gap-1 shrink-0">
+                                                                <Eye size={12}/> เปิดดู
+                                                            </span>
+                                                        </button>
+                                                    ));
+                                                })()}
+                                                
                                                 {trackResult.approved_attachment_url && (
-                                                    <button onClick={() => openPdf(trackResult.approved_attachment_url!)} className="w-full flex items-center justify-between p-3 bg-white border border-green-200 rounded-xl hover:bg-green-50 transition-colors group text-left shadow-sm">
-                                                        <div className="flex items-center gap-3"><div className="w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center"><CheckCircle size={16}/></div><span className="text-xs font-bold text-slate-700">เอกสารอนุมัติ</span></div>
-                                                        <span className="text-green-600 bg-green-50 px-2 py-1 rounded text-[10px] font-bold border border-green-100 group-hover:bg-white flex items-center gap-1"><Eye size={12}/> เปิดดู</span>
+                                                    <button 
+                                                        onClick={() => openPdf(trackResult.approved_attachment_url!)} 
+                                                        className="w-full flex items-center justify-between p-3 bg-white hover:bg-stone-50 border border-emerald-200 rounded-xl transition-all group text-left shadow-sm"
+                                                    >
+                                                        <div className="flex items-center gap-3 min-w-0 mr-4 flex-1">
+                                                            <div className="w-8 h-8 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center shrink-0">
+                                                                <CheckCircle size={16}/>
+                                                            </div>
+                                                            <span className="text-xs font-bold text-stone-700 truncate" title="เอกสารอนุมัติ.pdf">เอกสารอนุมัติ (ลงนามแล้ว).pdf</span>
+                                                        </div>
+                                                        <span className="text-emerald-600 bg-emerald-50 px-2 py-1 rounded text-[10px] font-extrabold border border-emerald-100 group-hover:bg-emerald-600 group-hover:text-white transition-all flex items-center gap-1 shrink-0">
+                                                            <Eye size={12}/> เปิดดู
+                                                        </span>
                                                     </button>
                                                 )}
                                             </div>
                                         )}
                                     </div>
 
-                                    <div className="relative border-l-2 border-slate-200 ml-4 space-y-6 pb-2">
-                                        {trackLogs.map((log, i) => (
-                                            <div key={i} className="relative pl-6">
-                                                <div className={`absolute -left-[9px] top-0 w-4 h-4 rounded-full border-2 border-white shadow-sm ${i === 0 ? 'bg-blue-600 ring-2 ring-blue-100' : 'bg-slate-300'}`}></div>
-                                                <p className="text-[10px] text-slate-400 font-bold mb-0.5">{new Date(log.timestamp).toLocaleString('th-TH')}</p>
-                                                <p className="font-bold text-slate-800 text-sm">{log.action}</p>
-                                                <p className="text-xs text-slate-500 bg-slate-50 p-2 rounded-lg mt-1 inline-block">{log.details}</p>
-                                            </div>
-                                        ))}
+                                    {/* Tracking Timeline */}
+                                    <div className="space-y-4">
+                                        <p className="text-[10px] text-stone-400 font-extrabold uppercase tracking-wide">เส้นทางการเดินหนังสือ</p>
+                                        <div className="relative border-l-2 border-stone-200/60 ml-4 space-y-6 pb-2">
+                                            {trackLogs.map((log, i) => (
+                                                <div key={i} className="relative pl-6 animate-fade-in">
+                                                    <div className={`absolute -left-[9px] top-1.5 w-4 h-4 rounded-full border-2 border-white shadow-md ${i === 0 ? 'bg-gradient-to-r from-indigo-500 to-purple-500 ring-4 ring-indigo-100' : 'bg-stone-300'}`}></div>
+                                                    <p className="text-[9px] text-stone-400 font-extrabold mb-0.5">{new Date(log.timestamp).toLocaleString('th-TH')}</p>
+                                                    <p className="font-extrabold text-stone-850 text-xs leading-relaxed">{log.action}</p>
+                                                    <p className="text-[10px] text-stone-500 bg-stone-100/60 px-2.5 py-1.5 rounded-lg mt-1 inline-block border border-stone-200/40 font-semibold leading-relaxed">{log.details}</p>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
                             )}
-                        </>
-                    ) : view === 'login' ? (
-                      <>
-                        <div className="text-center mb-8">
-                            <div className="w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-4 font-bold text-3xl shadow-lg shadow-blue-200 transform rotate-3">P</div>
-                            <h1 className="text-2xl font-bold text-slate-800">เข้าสู่ระบบสมาชิก</h1>
-                            <p className="text-slate-500 text-sm">สำหรับบุคคลทั่วไปที่ลงทะเบียนแล้ว</p>
                         </div>
-                        {error && <div className="bg-red-50 text-red-600 p-4 rounded-xl text-center font-bold mb-6 animate-pulse border border-red-100 text-sm">{error}</div>}
-                        {success && <div className="bg-green-50 text-green-600 p-4 rounded-xl text-center font-bold mb-6 animate-pulse border border-green-100 text-sm">{success}</div>}
+                    ) : view === 'login' ? (
+                      <div className="space-y-6">
+                        <div className="text-center mb-6">
+                            <div className="w-16 h-16 bg-gradient-to-tr from-indigo-600 to-purple-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-4 font-extrabold text-2xl shadow-lg shadow-indigo-100 rotate-3 animate-float">
+                                P
+                            </div>
+                            <h1 className="text-xl font-extrabold text-stone-850">เข้าสู่ระบบ Public Portal</h1>
+                            <p className="text-stone-500 text-xs font-semibold mt-1">ยื่นคำร้องและติดตามงานสารบรรณ คณะพยาบาลศาสตร์ CMU</p>
+                        </div>
+                        
+                        {error && (
+                            <div className="bg-rose-50 text-rose-700 p-4 rounded-xl text-center text-xs font-extrabold border border-rose-200">
+                                {error}
+                            </div>
+                        )}
+                        {success && (
+                            <div className="bg-emerald-50 text-emerald-700 p-4 rounded-xl text-center text-xs font-extrabold border border-emerald-200">
+                                {success}
+                            </div>
+                        )}
                         
                         <form onSubmit={handleLogin} className="space-y-4">
-                            <div className="space-y-1.5"><label className="text-xs font-bold text-slate-700 uppercase px-1">บัญชีผู้ใช้</label><input type="text" required className="w-full px-4 py-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 focus:bg-white" value={loginForm.username} onChange={e => setLoginForm({...loginForm, username: e.target.value})} placeholder="Username หรือ Email" /></div>
-                            <div className="space-y-1.5 relative">
-                                <label className="text-xs font-bold text-slate-700 uppercase px-1">รหัสผ่าน</label>
+                            <div className="space-y-1.5">
+                                <label className="modern-input-label px-1">ชื่อบัญชีผู้ใช้ (Username หรือ อีเมล)</label>
                                 <input 
-                                    type={showLoginPassword ? "text" : "password"} 
+                                    type="text" 
                                     required 
-                                    className="w-full px-4 py-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 focus:bg-white pr-12" 
-                                    value={loginForm.password} 
-                                    onChange={e => setLoginForm({...loginForm, password: e.target.value})} 
-                                    placeholder="••••••••" 
+                                    className="modern-input" 
+                                    value={loginForm.username} 
+                                    onChange={e => setLoginForm({...loginForm, username: e.target.value})} 
+                                    placeholder="Username หรือ Email" 
                                 />
-                                <button type="button" onClick={() => setShowLoginPassword(!showLoginPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 mt-3 text-slate-400 hover:text-slate-600"><Eye size={18} /></button>
                             </div>
-                            <button disabled={loading} type="submit" className="w-full bg-blue-600 text-white py-3.5 rounded-xl font-bold hover:bg-blue-700 shadow-lg shadow-blue-100 transition-all active:scale-95 flex items-center justify-center gap-2 mt-4">{loading ? <Loader2 className="animate-spin" size={20}/> : <User size={20} />} เข้าสู่ระบบ</button>
-                            <div className="text-center pt-2"><button type="button" onClick={() => setView('register')} className="text-sm font-bold text-blue-600 hover:underline">สมัครสมาชิกใหม่</button></div>
+                            <div className="space-y-1.5 relative">
+                                <label className="modern-input-label px-1">รหัสผ่าน</label>
+                                <div className="relative">
+                                    <input 
+                                        type={showLoginPassword ? "text" : "password"} 
+                                        required 
+                                        className="modern-input pr-12 font-bold" 
+                                        value={loginForm.password} 
+                                        onChange={e => setLoginForm({...loginForm, password: e.target.value})} 
+                                        placeholder="••••••••" 
+                                    />
+                                    <button 
+                                        type="button" 
+                                        onClick={() => setShowLoginPassword(!showLoginPassword)} 
+                                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-indigo-600 transition-colors"
+                                    >
+                                        {showLoginPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                    </button>
+                                </div>
+                            </div>
+                            <button 
+                                disabled={loading} 
+                                type="submit" 
+                                className="w-full btn btn-primary font-bold py-3.5 shadow-lg shadow-indigo-200/50 hover:-translate-y-0.5 active:translate-y-0 text-sm flex items-center justify-center gap-2 mt-4"
+                            >
+                                {loading ? <Loader2 className="animate-spin" size={18}/> : <User size={18} />} 
+                                เข้าสู่ระบบสมาชิก
+                            </button>
+                            
+                            <div className="text-center pt-2">
+                                <button 
+                                    type="button" 
+                                    onClick={() => setView('register')} 
+                                    className="text-xs font-bold text-indigo-600 hover:text-indigo-800 hover:underline transition-colors"
+                                >
+                                    สมัครสมาชิกบุคคลทั่วไป
+                                </button>
+                            </div>
                         </form>
-                      </>
+                      </div>
                     ) : (
-                      <>
-                        <div className="text-center mb-6">
-                            <h1 className="text-2xl font-bold text-slate-800">สมัครสมาชิก</h1>
-                            <p className="text-slate-500 text-sm">สร้างบัญชีสำหรับติดตามและยื่นเรื่อง</p>
+                      <div className="space-y-6">
+                        <div className="text-center mb-4">
+                            <h1 className="text-xl font-extrabold text-stone-850">สมัครสมาชิกบุคคลทั่วไป</h1>
+                            <p className="text-stone-500 text-xs font-semibold mt-1">สร้างบัญชีสำหรับเขียนยื่นและติดตามคำร้องของคุณ</p>
                         </div>
-                        {error && <div className="bg-red-50 text-red-600 p-4 rounded-xl text-center font-bold mb-6 text-xs">{error}</div>}
+                        
+                        {error && (
+                            <div className="bg-rose-50 text-rose-700 p-4 rounded-xl text-center text-xs font-extrabold border border-rose-200">
+                                {error}
+                            </div>
+                        )}
+                        
                         <form onSubmit={handleRegister} className="space-y-4">
-                             <div className="space-y-1.5"><label className="text-xs font-bold text-slate-500 uppercase px-1">ชื่อ-นามสกุล</label><input type="text" required className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-green-500 outline-none" value={regForm.full_name} onChange={e => setRegForm({...regForm, full_name: e.target.value})} /></div>
-                             <div className="space-y-1.5"><label className="text-xs font-bold text-slate-500 uppercase px-1">Username</label><input type="text" required className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-green-500 outline-none font-mono" value={regForm.username} onChange={e => setRegForm({...regForm, username: e.target.value})} /></div>
-                             <div className="space-y-1.5"><label className="text-xs font-bold text-slate-500 uppercase px-1">Email</label><input type="email" required className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-green-500 outline-none" value={regForm.email} onChange={e => setRegForm({...regForm, email: e.target.value})} /></div>
-                             
-                             <div className="space-y-1.5 relative">
-                                <label className="text-xs font-bold text-slate-500 uppercase px-1">รหัสผ่าน</label>
-                                <input type={showRegPassword ? "text" : "password"} required className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-green-500 outline-none pr-12 font-bold" value={regForm.password} onChange={e => setRegForm({...regForm, password: e.target.value})} />
-                                <button type="button" onClick={() => setShowRegPassword(!showRegPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 mt-3 text-slate-400">{showRegPassword ? <EyeOff size={18}/> : <Eye size={18}/>}</button>
+                             <div className="space-y-1.5">
+                                 <label className="modern-input-label px-1">ชื่อ-นามสกุลจริง</label>
+                                 <input 
+                                     type="text" 
+                                     required 
+                                     className="modern-input" 
+                                     value={regForm.full_name} 
+                                     onChange={e => setRegForm({...regForm, full_name: e.target.value})} 
+                                     placeholder="นายสมชาย มุ่งมั่น"
+                                 />
+                             </div>
+                             <div className="space-y-1.5">
+                                 <label className="modern-input-label px-1">Username (ภาษาอังกฤษและตัวเลข)</label>
+                                 <input 
+                                     type="text" 
+                                     required 
+                                     className="modern-input font-mono" 
+                                     value={regForm.username} 
+                                     onChange={e => setRegForm({...regForm, username: e.target.value})} 
+                                     placeholder="somchai2026"
+                                 />
+                             </div>
+                             <div className="space-y-1.5">
+                                 <label className="modern-input-label px-1">อีเมลติดต่อ</label>
+                                 <input 
+                                     type="email" 
+                                     required 
+                                     className="modern-input" 
+                                     value={regForm.email} 
+                                     onChange={e => setRegForm({...regForm, email: e.target.value})} 
+                                     placeholder="somchai@example.com"
+                                 />
                              </div>
                              
                              <div className="space-y-1.5 relative">
-                                <label className="text-xs font-bold text-slate-500 uppercase px-1">ยืนยันรหัสผ่าน</label>
-                                <input type={showConfirmPassword ? "text" : "password"} required className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-green-500 outline-none pr-12 font-bold" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} />
-                                <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 mt-3 text-slate-400">{showConfirmPassword ? <EyeOff size={18}/> : <Eye size={18}/>}</button>
+                                <label className="modern-input-label px-1">รหัสผ่าน</label>
+                                <div className="relative">
+                                    <input 
+                                        type={showRegPassword ? "text" : "password"} 
+                                        required 
+                                        className="modern-input pr-12 font-bold" 
+                                        value={regForm.password} 
+                                        onChange={e => setRegForm({...regForm, password: e.target.value})} 
+                                    />
+                                    <button 
+                                        type="button" 
+                                        onClick={() => setShowRegPassword(!showRegPassword)} 
+                                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400"
+                                    >
+                                        {showRegPassword ? <EyeOff size={16}/> : <Eye size={16}/>}
+                                    </button>
+                                </div>
+                             </div>
+                             
+                             <div className="space-y-1.5 relative">
+                                <label className="modern-input-label px-1">ยืนยันรหัสผ่าน</label>
+                                <div className="relative">
+                                    <input 
+                                        type={showConfirmPassword ? "text" : "password"} 
+                                        required 
+                                        className="modern-input pr-12 font-bold" 
+                                        value={confirmPassword} 
+                                        onChange={e => setConfirmPassword(e.target.value)} 
+                                    />
+                                    <button 
+                                        type="button" 
+                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)} 
+                                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400"
+                                    >
+                                        {showConfirmPassword ? <EyeOff size={16}/> : <Eye size={16}/>}
+                                    </button>
+                                </div>
                              </div>
 
-                             <button disabled={loading} type="submit" className="w-full bg-green-600 text-white py-3.5 rounded-xl font-bold hover:bg-green-700 shadow-lg shadow-green-100 transition-all active:scale-95 mt-4">{loading ? <Loader2 className="animate-spin mx-auto" size={20}/> : 'สมัครสมาชิก'}</button>
-                             <div className="text-center pt-2"><button type="button" onClick={() => setView('login')} className="text-sm font-bold text-slate-500 hover:text-slate-800">มีบัญชีอยู่แล้ว?</button></div>
+                             <button 
+                                 disabled={loading} 
+                                 type="submit" 
+                                 className="w-full btn btn-primary font-bold py-3.5 shadow-lg shadow-indigo-200/50 hover:-translate-y-0.5 active:translate-y-0 text-sm flex items-center justify-center gap-2 mt-4"
+                             >
+                                 {loading ? <Loader2 className="animate-spin" size={18}/> : 'สมัครสมาชิกบุคคลทั่วไป'}
+                             </button>
+                             <div className="text-center pt-2">
+                                 <button 
+                                     type="button" 
+                                     onClick={() => setView('login')} 
+                                     className="text-xs font-bold text-stone-500 hover:text-stone-850 transition-colors"
+                                 >
+                                     มีบัญชีอยู่แล้ว? เข้าสู่ระบบ
+                                 </button>
+                             </div>
                         </form>
-                      </>
+                      </div>
                     )}
                 </div>
                 
                 {view !== 'public_search' && view === 'login' && (
                     <div className="text-center mt-6">
-                        <button onClick={() => setView('public_search')} className="bg-white px-6 py-3 rounded-xl shadow-sm text-slate-600 font-bold text-sm border hover:border-blue-400 hover:text-blue-600 transition-all flex items-center gap-2 mx-auto">
-                            <Search size={18} /> ค้นหา/ติดตามสถานะ (ไม่ต้องล็อกอิน)
+                        <button 
+                            onClick={() => setView('public_search')} 
+                            className="bg-white hover:bg-stone-50 text-stone-600 font-extrabold text-xs border border-stone-200 hover:border-indigo-400 hover:text-indigo-600 rounded-xl px-6 py-3 shadow-md flex items-center gap-2 mx-auto transition-all active:scale-95"
+                        >
+                            <Search size={15} /> ค้นหา/ติดตามสถานะ (ไม่ต้องล็อกอิน)
                         </button>
                     </div>
                 )}
@@ -382,73 +591,134 @@ const PublicPortal: React.FC = () => {
 
   // Logged In Views
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 flex flex-col">
+    <div className="min-h-screen bg-stone-100 font-sans text-stone-900 flex flex-col">
         {/* Header */}
-        <header className="bg-white border-b sticky top-0 z-40">
-            <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">E</div>
-                    <span className="font-bold text-slate-800 hidden sm:inline">E-Saraban Public Portal</span>
+        <header className="bg-white/80 backdrop-blur-md border-b border-stone-200/80 sticky top-0 z-40">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 bg-gradient-to-tr from-indigo-600 to-violet-600 rounded-xl flex items-center justify-center text-white font-extrabold text-lg shadow-md shadow-indigo-150">E</div>
+                    <span className="font-extrabold text-stone-850 text-sm tracking-tight hidden sm:inline">E-Saraban Public Portal</span>
                 </div>
                 <div className="flex items-center gap-4">
-                    <span className="text-sm font-bold text-slate-600 hidden sm:inline">สวัสดี, {user?.full_name}</span>
-                    <button onClick={() => setShowProfileModal(true)} className="p-2 hover:bg-slate-100 rounded-full text-slate-400 hover:text-blue-600 transition-colors"><UserCircle size={24} /></button>
-                    <button onClick={() => { logoutUser(); setUser(null); setView('login'); }} className="p-2 hover:bg-red-50 rounded-full text-slate-400 hover:text-red-600 transition-colors"><LogOut size={20} /></button>
+                    <span className="text-xs font-bold text-stone-600 hidden sm:inline">สวัสดี, {user?.full_name}</span>
+                    <button 
+                        onClick={() => setShowProfileModal(true)} 
+                        className="p-2 hover:bg-stone-100 rounded-xl text-stone-400 hover:text-indigo-600 transition-all"
+                    >
+                        <UserCircle size={22} />
+                    </button>
+                    <button 
+                        onClick={() => { logoutUser(); setUser(null); setView('login'); }} 
+                        className="p-2 hover:bg-rose-50 rounded-xl text-stone-400 hover:text-rose-600 transition-all"
+                    >
+                        <LogOut size={20} />
+                    </button>
                 </div>
             </div>
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 max-w-6xl mx-auto w-full p-4 md:p-8">
+        <main className="flex-1 max-w-6xl mx-auto w-full p-4 md:p-8 animate-fade-in">
             {view === 'dashboard' && (
                 <div className="space-y-6">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <h1 className="text-2xl font-bold text-slate-800">รายการยื่นเรื่องของคุณ</h1>
+                        <div>
+                            <h1 className="text-xl font-extrabold text-stone-850 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">รายการยื่นเรื่องของคุณ</h1>
+                            <p className="text-xs text-stone-500 font-medium mt-1">จัดการ ติดตามงาน หรือยื่นคำร้องต่อคณะพยาบาลศาสตร์ CMU</p>
+                        </div>
                         <div className="flex gap-2">
-                            <button onClick={() => setView('chat')} className="bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-xl font-bold shadow-sm hover:bg-slate-50 flex items-center gap-2">
-                                <MessageSquare size={18} /> ติดต่อเจ้าหน้าที่
+                            <button 
+                                onClick={() => setView('chat')} 
+                                className="btn text-stone-600 bg-white border border-stone-200 hover:bg-stone-50/80 rounded-xl px-4 py-2.5 flex items-center gap-2 transition-all text-xs font-bold shadow-sm"
+                            >
+                                <MessageSquare size={16} /> ติดต่อเจ้าหน้าที่
                             </button>
-                            <button onClick={() => setView('submit')} className="bg-blue-600 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg hover:bg-blue-700 flex items-center gap-2 transition-all active:scale-95">
-                                <Send size={18} /> ยื่นเรื่องใหม่
+                            <button 
+                                onClick={() => setView('submit')} 
+                                className="btn btn-primary font-bold px-5 py-2.5 shadow-md shadow-indigo-200/50 hover:-translate-y-0.5 active:translate-y-0 text-xs flex items-center gap-2"
+                            >
+                                <Send size={16} /> ยื่นเรื่องใหม่
                             </button>
                         </div>
                     </div>
 
-                    {/* Stats */}
+                    {/* Stats Dashboard */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div className="bg-white p-4 rounded-2xl border shadow-sm"><p className="text-xs font-bold text-slate-400 uppercase">ทั้งหมด</p><p className="text-2xl font-bold text-slate-800">{documents.length}</p></div>
-                        <div className="bg-white p-4 rounded-2xl border shadow-sm"><p className="text-xs font-bold text-amber-500 uppercase">รอรับเรื่อง</p><p className="text-2xl font-bold text-amber-600">{documents.filter(d => d.status === DocStatus.PENDING_ACCEPT || d.status === DocStatus.PENDING_VERIFY).length}</p></div>
-                        <div className="bg-white p-4 rounded-2xl border shadow-sm"><p className="text-xs font-bold text-blue-500 uppercase">กำลังดำเนินการ</p><p className="text-2xl font-bold text-blue-600">{documents.filter(d => d.status === DocStatus.REGISTERED || d.status === DocStatus.FORWARDED).length}</p></div>
-                        <div className="bg-white p-4 rounded-2xl border shadow-sm"><p className="text-xs font-bold text-green-500 uppercase">เสร็จสิ้น</p><p className="text-2xl font-bold text-green-600">{documents.filter(d => d.status === DocStatus.APPROVED).length}</p></div>
+                        <div className="glass-card p-5 border border-white/50 shadow-sm relative overflow-hidden">
+                            <div className="absolute top-0 left-0 w-1 h-full bg-stone-300"></div>
+                            <p className="text-[10px] font-extrabold text-stone-400 uppercase tracking-wider">เรื่องที่ยื่นทั้งหมด</p>
+                            <p className="text-2xl font-black text-stone-800 mt-1">{documents.length}</p>
+                        </div>
+                        <div className="glass-card p-5 border border-white/50 shadow-sm relative overflow-hidden">
+                            <div className="absolute top-0 left-0 w-1 h-full bg-amber-500"></div>
+                            <p className="text-[10px] font-extrabold text-amber-500 uppercase tracking-wider">รอหน่วยงานรับเรื่อง</p>
+                            <p className="text-2xl font-black text-amber-600 mt-1">
+                                {documents.filter(d => d.status === DocStatus.PENDING_ACCEPT || d.status === DocStatus.PENDING_VERIFY).length}
+                            </p>
+                        </div>
+                        <div className="glass-card p-5 border border-white/50 shadow-sm relative overflow-hidden">
+                            <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
+                            <p className="text-[10px] font-extrabold text-indigo-500 uppercase tracking-wider">กำลังดำเนินการ</p>
+                            <p className="text-2xl font-black text-indigo-600 mt-1">
+                                {documents.filter(d => d.status === DocStatus.REGISTERED || d.status === DocStatus.FORWARDED).length}
+                            </p>
+                        </div>
+                        <div className="glass-card p-5 border border-white/50 shadow-sm relative overflow-hidden">
+                            <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
+                            <p className="text-[10px] font-extrabold text-emerald-500 uppercase tracking-wider">เสร็จสิ้นสมบูรณ์</p>
+                            <p className="text-2xl font-black text-emerald-600 mt-1">
+                                {documents.filter(d => d.status === DocStatus.APPROVED).length}
+                            </p>
+                        </div>
                     </div>
 
-                    <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
-                        <div className="p-4 border-b flex items-center justify-between bg-slate-50">
-                            <h3 className="font-bold text-slate-700 flex items-center gap-2"><ListFilter size={18}/> ประวัติการยื่นคำร้อง</h3>
-                            <div className="relative">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14}/>
-                                <input type="text" placeholder="ค้นหา..." className="pl-9 pr-4 py-1.5 text-sm border rounded-lg outline-none focus:ring-2 focus:ring-blue-500" value={searchTerm} onChange={e => setSearchTerm(e.target.value)}/>
+                    <div className="glass-card border border-white/50 shadow-md overflow-hidden rounded-2xl">
+                        <div className="p-5 border-b border-stone-200/60 flex flex-col sm:flex-row items-center justify-between gap-4 bg-stone-50/50">
+                            <h3 className="font-extrabold text-stone-850 flex items-center gap-2 text-sm">
+                                <ListFilter size={16}/> ประวัติการยื่นคำร้องทั้งหมด
+                            </h3>
+                            <div className="relative w-full sm:w-64">
+                                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" size={14}/>
+                                <input 
+                                    type="text" 
+                                    placeholder="ค้นหา Tracking Code / ชื่อเรื่อง..." 
+                                    className="modern-input pl-9 pr-4 py-2 text-xs font-semibold" 
+                                    value={searchTerm} 
+                                    onChange={e => setSearchTerm(e.target.value)}
+                                />
                             </div>
                         </div>
                         <div className="overflow-x-auto">
-                            <table className="w-full text-sm text-left">
-                                <thead className="bg-white text-slate-500 font-bold border-b">
-                                    <tr>
-                                        <th className="px-6 py-4">วันที่ยื่น</th>
-                                        <th className="px-6 py-4">เรื่อง</th>
-                                        <th className="px-6 py-4">Tracking Code</th>
-                                        <th className="px-6 py-4">สถานะ</th>
+                            <table className="w-full text-left border-collapse">
+                                <thead>
+                                    <tr className="bg-stone-50/30 text-stone-400 font-extrabold text-[10px] uppercase tracking-wider border-b border-stone-200/60">
+                                        <th className="px-6 py-3.5">วันที่ยื่นเรื่อง</th>
+                                        <th className="px-6 py-3.5">ชื่อเรื่องที่ยื่นคำร้อง</th>
+                                        <th className="px-6 py-3.5">Tracking Code</th>
+                                        <th className="px-6 py-3.5">สถานะล่าสุด</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y">
+                                <tbody className="divide-y divide-stone-200/40">
                                     {paginatedDocs.length === 0 ? (
-                                        <tr><td colSpan={4} className="px-6 py-12 text-center text-slate-400 italic">ไม่พบข้อมูล</td></tr>
+                                        <tr>
+                                            <td colSpan={4} className="px-6 py-12 text-center text-stone-400 italic font-semibold text-xs bg-white/40">
+                                                ไม่พบข้อมูลประวัติการยื่นคำร้อง
+                                            </td>
+                                        </tr>
                                     ) : paginatedDocs.map(doc => (
-                                        <tr key={doc.id} onClick={() => handleRowClick(doc.id)} className="hover:bg-blue-50 cursor-pointer group">
-                                            <td className="px-6 py-4 text-slate-500">{new Date(doc.created_at).toLocaleDateString('th-TH')}</td>
-                                            <td className="px-6 py-4 font-bold text-slate-800 group-hover:text-blue-600 transition-colors">{doc.subject}</td>
-                                            <td className="px-6 py-4 font-mono text-slate-600">{doc.tracking_code}</td>
-                                            <td className="px-6 py-4"><StatusBadge status={doc.status} /></td>
+                                        <tr key={doc.id} onClick={() => handleRowClick(doc.id)} className="hover:bg-indigo-50/30 cursor-pointer group transition-all">
+                                            <td className="px-6 py-4 text-stone-500 font-medium text-xs">
+                                                {new Date(doc.created_at).toLocaleDateString('th-TH')}
+                                            </td>
+                                            <td className="px-6 py-4 font-bold text-stone-850 text-xs group-hover:text-indigo-600 transition-colors">
+                                                {doc.subject}
+                                            </td>
+                                            <td className="px-6 py-4 font-mono font-bold text-xs text-stone-600">
+                                                {doc.tracking_code}
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <StatusBadge status={doc.status} />
+                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -465,8 +735,16 @@ const PublicPortal: React.FC = () => {
             {view === 'edit' && selectedDocId && <RegisterForm user={user!} idProp={selectedDocId} onCancel={() => setView('detail')} onSuccess={() => { setView('detail'); loadDocuments(user!.id); }} />}
             
             {view === 'chat' && (
-                <div className="h-[calc(100vh-8rem)]">
-                    <div className="mb-4 flex items-center gap-2"><button onClick={() => setView('dashboard')} className="p-2 hover:bg-slate-100 rounded-full"><ArrowLeft size={20}/></button><h2 className="text-xl font-bold">ติดต่อเจ้าหน้าที่</h2></div>
+                <div className="h-[calc(100vh-10rem)]">
+                    <div className="mb-4 flex items-center gap-2">
+                        <button 
+                            onClick={() => setView('dashboard')} 
+                            className="p-2 hover:bg-stone-200 rounded-xl text-stone-500 hover:text-stone-800 transition-all"
+                        >
+                            <ArrowLeft size={18}/>
+                        </button>
+                        <h2 className="text-base font-extrabold text-stone-850">ห้องสนทนาติดต่อประสานงานเจ้าหน้าที่</h2>
+                    </div>
                     <ChatSystem user={user!} />
                 </div>
             )}
@@ -474,34 +752,77 @@ const PublicPortal: React.FC = () => {
 
         {/* Profile Modal */}
         {showProfileModal && (
-            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-200">
-                    <div className="bg-blue-600 p-6 text-center text-white relative">
-                        <button onClick={() => setShowProfileModal(false)} className="absolute top-4 right-4 text-white/50 hover:text-white"><X size={24}/></button>
-                        <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3"><UserCircle size={40} /></div>
-                        <h3 className="text-xl font-bold">ข้อมูลส่วนตัว</h3>
-                        <p className="text-white/80 text-sm">@{user?.username}</p>
-                    </div>
-                    <form onSubmit={handleUpdateProfile} className="p-6 space-y-4">
-                        {error && <div className="p-3 bg-red-50 text-red-600 text-xs font-bold rounded-lg border border-red-100 flex items-center gap-2"><AlertCircle size={14}/> {error}</div>}
-                        {success && <div className="p-3 bg-green-50 text-green-600 text-xs font-bold rounded-lg border border-green-100 flex items-center gap-2"><CheckCircle2 size={14}/> {success}</div>}
-                        
-                        <div className="space-y-1">
-                            <label className="text-xs font-bold text-slate-500 uppercase">ชื่อ-นามสกุล</label>
-                            <input type="text" className="w-full px-4 py-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500" value={editName} onChange={e => setEditName(e.target.value)} />
+            <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                <div className="glass-card border border-white/60 shadow-2xl w-full max-w-md overflow-hidden rounded-3xl animate-fade-in-scale">
+                    <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-center text-white relative">
+                        <button 
+                            onClick={() => setShowProfileModal(false)} 
+                            className="absolute top-4 right-4 text-white/60 hover:text-white transition-colors"
+                        >
+                            <X size={20}/>
+                        </button>
+                        <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner">
+                            <UserCircle size={44} />
                         </div>
-                        <div className="space-y-1">
-                            <label className="text-xs font-bold text-slate-500 uppercase">เปลี่ยนรหัสผ่าน (ถ้าต้องการ)</label>
+                        <h3 className="text-lg font-extrabold">แก้ไขข้อมูลโปรไฟล์</h3>
+                        <p className="text-white/80 font-mono text-xs mt-0.5">@{user?.username}</p>
+                    </div>
+                    
+                    <form onSubmit={handleUpdateProfile} className="p-6 space-y-4">
+                        {error && (
+                            <div className="p-3 bg-rose-50 text-rose-700 text-xs font-bold rounded-xl border border-rose-200 flex items-center gap-2 animate-fade-in">
+                                <AlertCircle size={14}/> {error}
+                            </div>
+                        )}
+                        {success && (
+                            <div className="p-3 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-xl border border-emerald-200 flex items-center gap-2 animate-fade-in">
+                                <CheckCircle2 size={14}/> {success}
+                            </div>
+                        )}
+                        
+                        <div className="space-y-1.5">
+                            <label className="modern-input-label px-1">ชื่อ-นามสกุลจริง</label>
+                            <input 
+                                type="text" 
+                                className="modern-input" 
+                                value={editName} 
+                                onChange={e => setEditName(e.target.value)} 
+                            />
+                        </div>
+                        <div className="space-y-1.5">
+                            <label className="modern-input-label px-1">เปลี่ยนรหัสผ่านใหม่ (หากต้องการ)</label>
                             <div className="relative">
-                                <input type={showNewPass ? "text" : "password"} className="w-full px-4 py-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500 pr-12" placeholder="รหัสผ่านใหม่" value={newPass} onChange={e => setNewPass(e.target.value)} />
-                                <button type="button" onClick={() => setShowNewPass(!showNewPass)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">{showNewPass ? <EyeOff size={18}/> : <Eye size={18}/>}</button>
+                                <input 
+                                    type={showNewPass ? "text" : "password"} 
+                                    className="modern-input pr-12 font-bold" 
+                                    placeholder="เว้นว่างไว้เพื่อใช้รหัสผ่านเดิม" 
+                                    value={newPass} 
+                                    onChange={e => setNewPass(e.target.value)} 
+                                />
+                                <button 
+                                    type="button" 
+                                    onClick={() => setShowNewPass(!showNewPass)} 
+                                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-indigo-650 transition-colors"
+                                >
+                                    {showNewPass ? <EyeOff size={16}/> : <Eye size={16}/>}
+                                </button>
                             </div>
                         </div>
 
                         <div className="pt-2 flex gap-3">
-                            <button type="button" onClick={() => setShowProfileModal(false)} className="flex-1 px-4 py-3 text-slate-500 font-bold border rounded-xl hover:bg-slate-50">ปิด</button>
-                            <button type="submit" disabled={savingProfile} className="flex-2 px-6 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 flex items-center justify-center gap-2 transition-all active:scale-95">
-                                {savingProfile ? <Loader2 className="animate-spin" size={20}/> : <Save size={18}/>} บันทึก
+                            <button 
+                                type="button" 
+                                onClick={() => setShowProfileModal(false)} 
+                                className="btn text-stone-500 font-bold border border-stone-200 hover:bg-stone-50 rounded-xl px-4 py-3 text-xs flex-1 transition-all"
+                            >
+                                ยกเลิก
+                            </button>
+                            <button 
+                                type="submit" 
+                                disabled={savingProfile} 
+                                className="btn btn-primary font-bold px-6 py-3 shadow-lg shadow-indigo-200/50 hover:-translate-y-0.5 active:translate-y-0 text-xs flex-[2] flex items-center justify-center gap-2"
+                            >
+                                {savingProfile ? <Loader2 className="animate-spin" size={16}/> : <Save size={16}/>} บันทึกการแก้ไข
                             </button>
                         </div>
                     </form>

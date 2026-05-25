@@ -64,63 +64,102 @@ const MasterDataMgmt: React.FC = () => {
     ];
 
     return (
-        <div className="space-y-6">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="space-y-6 animate-fade-in">
+            {/* Page Header */}
+            <div className="page-header flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800">จัดการข้อมูลพื้นฐาน (Master Data)</h1>
-                    <p className="text-slate-500">จัดการชุดข้อมูลที่ใช้ซ้ำในระบบให้เป็นระเบียบ</p>
+                    <h1 className="page-title bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent flex items-center gap-2">
+                        <Database className="text-indigo-600 animate-float" size={28} />
+                        จัดการข้อมูลพื้นฐาน (Master Data)
+                    </h1>
+                    <p className="text-stone-500 text-sm font-medium mt-1">จัดการชุดข้อมูลสำหรับใช้งานซ้ำภายในระบบสารบรรณพยาบาลให้มีความถูกต้องเป็นระเบียบ</p>
                 </div>
                 <button 
                     onClick={() => { setEditingItem({}); setIsModalOpen(true); }}
-                    className="bg-blue-600 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 hover:bg-blue-700 font-bold shadow-lg transition-all active:scale-95"
+                    className="btn btn-primary shadow-lg shadow-indigo-200/50 hover:-translate-y-0.5 active:translate-y-0 font-bold px-5.5 py-3 rounded-xl shrink-0"
                 >
-                    <Plus size={20} /> เพิ่มข้อมูลใหม่
+                    <Plus size={18} /> เพิ่มข้อมูลใหม่
                 </button>
             </div>
 
-            <div className="flex gap-2 border-b overflow-x-auto whitespace-nowrap">
+            {/* Custom Premium Tabs Selector */}
+            <div className="flex gap-2.5 border-b border-stone-200/60 overflow-x-auto whitespace-nowrap pb-2 scrollbar-none">
                 {tabs.map(tab => (
                     <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id as any)}
-                        className={`px-6 py-4 flex items-center gap-2 border-b-2 font-bold transition-all ${activeTab === tab.id ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-400 hover:text-slate-600 hover:bg-slate-50'}`}
+                        className={`px-5 py-3 flex items-center gap-2.5 rounded-xl font-bold transition-all duration-200 ${
+                            activeTab === tab.id 
+                                ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-200/40' 
+                                : 'text-stone-500 hover:text-stone-800 hover:bg-stone-100/60'
+                        }`}
                     >
-                        <tab.icon size={18} /> {tab.label}
+                        <tab.icon size={18} className={activeTab === tab.id ? 'animate-pulse' : ''} /> {tab.label}
                     </button>
                 ))}
             </div>
 
-            <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
-                <div className="p-4 bg-slate-50 border-b flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                        <ChevronRight size={14}/> {tabs.find(t => t.id === activeTab)?.desc}
+            {/* Glass Card Table Wrapper */}
+            <div className="glass-card overflow-hidden">
+                <div className="px-6 py-4.5 bg-stone-50/50 border-b border-stone-200/60 flex items-center justify-between">
+                    <span className="text-xs font-bold text-stone-500 uppercase tracking-widest flex items-center gap-2">
+                        <ChevronRight size={14} className="text-indigo-500"/> {tabs.find(t => t.id === activeTab)?.desc}
                     </span>
-                    <span className="text-xs text-slate-400 font-bold">{items.length} รายการ</span>
+                    <span className="badge bg-indigo-50 text-indigo-700 font-bold border border-indigo-100/60 px-3 py-1.5">{items.length} รายการ</span>
                 </div>
                 <div className="overflow-x-auto">
-                    <table className="w-full text-sm text-left">
-                        <thead className="bg-white text-slate-500 font-bold border-b">
-                            <tr>
-                                <th className="px-6 py-4">ลำดับ</th>
-                                <th className="px-6 py-4">ชื่อเรียก / ชื่อหน่วยงาน</th>
-                                {activeTab === 'recipients' && <th className="px-6 py-4">ตำแหน่ง</th>}
-                                <th className="px-6 py-4 text-right">จัดการ</th>
+                    <table className="w-full text-sm text-left border-collapse">
+                        <thead>
+                            <tr className="border-b border-stone-200/60 bg-stone-50/30 text-stone-500 font-bold">
+                                <th className="px-6 py-4 font-bold text-xs uppercase tracking-wider w-20">ลำดับ</th>
+                                <th className="px-6 py-4 font-bold text-xs uppercase tracking-wider">ชื่อเรียก / ชื่อหน่วยงาน</th>
+                                {activeTab === 'recipients' && <th className="px-6 py-4 font-bold text-xs uppercase tracking-wider">ตำแหน่ง</th>}
+                                <th className="px-6 py-4 font-bold text-xs uppercase tracking-wider text-right w-32">จัดการ</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y">
+                        <tbody className="divide-y divide-stone-200/40">
                             {loading && !isModalOpen && !deleteConfirm ? (
-                                <tr><td colSpan={4} className="px-6 py-12 text-center"><Loader2 className="animate-spin mx-auto text-blue-600" size={32} /></td></tr>
+                                <tr>
+                                    <td colSpan={4} className="px-6 py-16 text-center">
+                                        <div className="flex flex-col items-center gap-3">
+                                            <Loader2 className="animate-spin text-indigo-600" size={32} />
+                                            <span className="text-stone-400 font-bold text-xs">กำลังโหลดข้อมูล...</span>
+                                        </div>
+                                    </td>
+                                </tr>
                             ) : items.length === 0 ? (
-                                <tr><td colSpan={4} className="px-6 py-12 text-center text-slate-400 italic font-bold">ไม่พบข้อมูลในหมวดหมู่นี้</td></tr>
+                                <tr>
+                                    <td colSpan={4} className="px-6 py-16 text-center text-stone-400 italic font-bold">
+                                        ไม่พบข้อมูลในหมวดหมู่นี้
+                                    </td>
+                                </tr>
                             ) : items.map((item, index) => (
-                                <tr key={item.id} className="hover:bg-blue-50/30 transition-colors">
-                                    <td className="px-6 py-4 text-slate-400 font-mono text-xs">{index + 1}</td>
-                                    <td className="px-6 py-4 font-bold text-slate-800">{item.name}</td>
-                                    {activeTab === 'recipients' && <td className="px-6 py-4 text-slate-500 font-medium">{item.position || '-'}</td>}
+                                <tr key={item.id} className="hover:bg-indigo-50/20 transition-colors duration-150">
+                                    <td className="px-6 py-4 text-stone-400 font-mono text-xs">{index + 1}</td>
+                                    <td className="px-6 py-4 font-bold text-stone-800">{item.name}</td>
+                                    {activeTab === 'recipients' && (
+                                        <td className="px-6 py-4 text-stone-500 font-medium">
+                                            <span className="px-2.5 py-1 bg-stone-100 rounded-lg text-xs font-semibold text-stone-600">
+                                                {item.position || '-'}
+                                            </span>
+                                        </td>
+                                    )}
                                     <td className="px-6 py-4">
-                                        <div className="flex justify-end gap-2">
-                                            <button onClick={() => { setEditingItem(item); setIsModalOpen(true); }} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="แก้ไข"><Edit2 size={16}/></button>
-                                            <button onClick={() => setDeleteConfirm({ isOpen: true, id: item.id, name: item.name })} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="ลบ"><Trash2 size={16}/></button>
+                                        <div className="flex justify-end gap-1.5">
+                                            <button 
+                                                onClick={() => { setEditingItem(item); setIsModalOpen(true); }} 
+                                                className="btn btn-icon btn-sm btn-ghost hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all" 
+                                                title="แก้ไข"
+                                            >
+                                                <Edit2 size={15}/>
+                                            </button>
+                                            <button 
+                                                onClick={() => setDeleteConfirm({ isOpen: true, id: item.id, name: item.name })} 
+                                                className="btn btn-icon btn-sm btn-ghost hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all" 
+                                                title="ลบ"
+                                            >
+                                                <Trash2 size={15}/>
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -130,19 +169,30 @@ const MasterDataMgmt: React.FC = () => {
                 </div>
             </div>
 
-            {/* Edit Modal */}
+            {/* Premium Glass Modal - Edit / Create */}
             {isModalOpen && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[150] flex items-center justify-center p-4">
-                    <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden animate-in zoom-in-95 duration-200">
-                        <div className="p-6 border-b flex justify-between items-center bg-slate-50">
-                            <h3 className="font-bold text-lg text-slate-800">{editingItem?.id ? 'แก้ไขข้อมูล' : 'เพิ่มข้อมูลใหม่'}</h3>
-                            <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600"><X size={24}/></button>
+                <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-[150] flex items-center justify-center p-4 animate-fade-in">
+                    <div className="glass-modal max-w-md w-full overflow-hidden animate-fade-in-scale border border-white/50">
+                        <div className="px-6 py-5 border-b border-stone-200/60 flex justify-between items-center bg-stone-50/50">
+                            <h3 className="font-bold text-lg text-stone-800 flex items-center gap-2">
+                                <Database className="text-indigo-600" size={20} />
+                                {editingItem?.id ? 'แก้ไขข้อมูล' : 'เพิ่มข้อมูลใหม่'}
+                            </h3>
+                            <button 
+                                onClick={() => setIsModalOpen(false)} 
+                                className="text-stone-400 hover:text-stone-600 p-1 hover:bg-stone-100 rounded-lg transition-colors"
+                            >
+                                <X size={20}/>
+                            </button>
                         </div>
-                        <form onSubmit={handleSave} className="p-8 space-y-6">
+                        <form onSubmit={handleSave} className="p-6 space-y-5">
                             <div className="space-y-1.5">
-                                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest px-1">ชื่อเรียก / ชื่อหน่วยงาน *</label>
+                                <label className="modern-input-label px-1">ชื่อเรียก / ชื่อหน่วยงาน *</label>
                                 <input 
-                                    type="text" required autoFocus className="w-full px-4 py-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 focus:bg-white transition-all" 
+                                    type="text" 
+                                    required 
+                                    autoFocus 
+                                    className="modern-input font-semibold" 
                                     value={editingItem?.name || ''} 
                                     onChange={e => setEditingItem({...editingItem, name: e.target.value})}
                                     placeholder="ระบุชื่อที่ต้องการ..."
@@ -150,19 +200,30 @@ const MasterDataMgmt: React.FC = () => {
                             </div>
                             {activeTab === 'recipients' && (
                                 <div className="space-y-1.5">
-                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest px-1">ตำแหน่ง (ระบุเพื่อความชัดเจน)</label>
+                                    <label className="modern-input-label px-1">ตำแหน่ง (ระบุเพื่อความชัดเจน)</label>
                                     <input 
-                                        type="text" className="w-full px-4 py-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 focus:bg-white transition-all" 
+                                        type="text" 
+                                        className="modern-input font-medium" 
                                         value={editingItem?.position || ''} 
                                         onChange={e => setEditingItem({...editingItem, position: e.target.value})}
-                                        placeholder="เช่น ปลัดองค์การบริหารส่วนตำบล..."
+                                        placeholder="เช่น หัวหน้าฝ่ายงานการพยาบาล..."
                                     />
                                 </div>
                             )}
-                            <div className="flex justify-end gap-3 pt-4 border-t">
-                                <button type="button" onClick={() => setIsModalOpen(false)} className="px-5 py-3 text-slate-500 font-bold rounded-xl hover:bg-slate-50">ยกเลิก</button>
-                                <button type="submit" disabled={loading} className="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-blue-100 transition-all active:scale-95 disabled:opacity-50">
-                                    {loading ? <Loader2 className="animate-spin" size={20}/> : <Save size={20}/>} บันทึกข้อมูล
+                            <div className="flex justify-end gap-2.5 pt-4 border-t border-stone-200/60">
+                                <button 
+                                    type="button" 
+                                    onClick={() => setIsModalOpen(false)} 
+                                    className="btn btn-ghost font-bold hover:bg-stone-100 text-stone-500"
+                                >
+                                    ยกเลิก
+                                </button>
+                                <button 
+                                    type="submit" 
+                                    disabled={loading} 
+                                    className="btn btn-success font-bold px-6 shadow-lg shadow-emerald-200/50"
+                                >
+                                    {loading ? <Loader2 className="animate-spin" size={18}/> : <Save size={18}/>} บันทึกข้อมูล
                                 </button>
                             </div>
                         </form>
@@ -172,19 +233,26 @@ const MasterDataMgmt: React.FC = () => {
 
             {/* Custom Delete Confirmation Modal */}
             {deleteConfirm?.isOpen && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] flex items-center justify-center p-4">
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-200">
+                <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-[200] flex items-center justify-center p-4 animate-fade-in">
+                    <div className="glass-modal max-w-sm w-full overflow-hidden animate-fade-in-scale border border-white/50">
                         <div className="p-6 text-center">
-                            <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <AlertTriangle size={32}/>
+                            <div className="w-14 h-14 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-rose-100">
+                                <AlertTriangle className="animate-pulse" size={28}/>
                             </div>
-                            <h3 className="text-xl font-bold text-slate-800 mb-2">ยืนยันการลบ</h3>
-                            <p className="text-slate-500 text-sm mb-6 px-4">คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูล <span className="text-red-600 font-bold">"{deleteConfirm.name}"</span> ออกจากระบบ?</p>
-                            <div className="flex gap-3">
-                                <button onClick={() => setDeleteConfirm(null)} className="flex-1 px-4 py-3 text-slate-500 font-bold border rounded-xl hover:bg-slate-50">ยกเลิก</button>
+                            <h3 className="text-lg font-bold text-stone-900 mb-1.5">ยืนยันการลบข้อมูล</h3>
+                            <p className="text-stone-500 text-sm mb-6 px-2 leading-relaxed">
+                                คุณแน่ใจหรือไม่ว่าต้องการลบ <span className="text-rose-600 font-bold">"{deleteConfirm.name}"</span> ออกจากระบบ? การกระทำนี้ไม่สามารถย้อนคืนได้
+                            </p>
+                            <div className="flex gap-2.5">
+                                <button 
+                                    onClick={() => setDeleteConfirm(null)} 
+                                    className="flex-1 btn btn-secondary font-bold text-stone-500 hover:bg-stone-100"
+                                >
+                                    ยกเลิก
+                                </button>
                                 <button 
                                     onClick={handleDelete}
-                                    className="flex-1 px-4 py-3 bg-red-600 text-white font-bold rounded-xl shadow-lg hover:bg-red-700 transition-all active:scale-95"
+                                    className="flex-1 btn btn-danger font-bold shadow-lg shadow-rose-200/50"
                                 >
                                     {loading ? <Loader2 className="animate-spin mx-auto" size={18}/> : 'ยืนยันลบ'}
                                 </button>

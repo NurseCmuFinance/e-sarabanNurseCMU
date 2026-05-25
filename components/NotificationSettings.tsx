@@ -177,92 +177,116 @@ const NotificationSettings: React.FC<NotificationSettingsProps> = ({ user }) => 
 
     if (user.role !== UserRole.ADMIN) {
         return (
-            <div className="flex flex-col items-center justify-center h-[50vh] text-slate-400">
-                <AlertTriangle size={48} className="mb-4 text-orange-400"/>
-                <h2 className="text-xl font-bold text-slate-700">ไม่มีสิทธิ์เข้าถึง</h2>
-                <p>หน้านี้สำหรับผู้ดูแลระบบ (Admin) เท่านั้น</p>
+            <div className="flex flex-col items-center justify-center h-[50vh] text-stone-500">
+                <AlertTriangle size={48} className="mb-4 text-amber-500 animate-pulse"/>
+                <p className="text-lg font-bold">เฉพาะผู้ดูแลระบบเท่านั้นที่มีสิทธิ์เข้าถึงหน้านี้</p>
             </div>
         );
     }
 
-    if (loading) {
-        return <div className="flex justify-center items-center h-[50vh]"><Loader2 className="animate-spin text-blue-600" size={32}/></div>;
-    }
-
-    const isTokenExpired = config.gmailTokenExpiry && Date.now() > config.gmailTokenExpiry;
-
     return (
-        <div className="space-y-6 max-w-4xl mx-auto">
-             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="space-y-6 max-w-4xl mx-auto animate-fade-in">
+             {/* Page Header */}
+             <div className="page-header flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800">ตั้งค่าการแจ้งเตือน</h1>
-                    <p className="text-slate-500 font-medium">กำหนดรูปแบบข้อความและช่องทางการแจ้งเตือนอัตโนมัติ</p>
+                    <h1 className="page-title bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent flex items-center gap-2">
+                        <Mail className="text-indigo-600 animate-float" size={28} />
+                        ตั้งค่าการเชื่อมต่อและแจ้งเตือน
+                    </h1>
+                    <p className="text-stone-500 text-sm font-medium mt-1">กำหนดรูปแบบข้อความการแจ้งเตือนอัตโนมัติ การเชื่อมต่อ Gmail OAuth, LINE Messaging API และ Gemini OCR</p>
                 </div>
             </div>
 
-            <div className="flex gap-2 border-b overflow-x-auto whitespace-nowrap">
+            {/* Custom Tab Switcher */}
+            <div className="flex gap-2.5 border-b border-stone-200/60 overflow-x-auto whitespace-nowrap pb-2 scrollbar-none">
                 <button
+                    type="button"
                     onClick={() => setActiveTab('email')}
-                    className={`px-6 py-4 flex items-center gap-2 border-b-2 font-bold transition-all ${activeTab === 'email' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-400 hover:text-slate-600 hover:bg-slate-50'}`}
+                    className={`px-5 py-3 flex items-center gap-2.5 rounded-xl font-bold transition-all duration-200 ${
+                        activeTab === 'email' 
+                            ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-100' 
+                            : 'text-stone-500 hover:text-indigo-600 hover:bg-stone-100/60'
+                    }`}
                 >
-                    <Mail size={18} /> ตั้งค่า Gmail API (Email)
+                    <Mail size={18} className={activeTab === 'email' ? 'animate-pulse' : ''} /> ตั้งค่า Gmail API (Email)
                 </button>
                 <button
+                    type="button"
                     onClick={() => setActiveTab('line')}
-                    className={`px-6 py-4 flex items-center gap-2 border-b-2 font-bold transition-all ${activeTab === 'line' ? 'border-green-600 text-green-600' : 'border-transparent text-slate-400 hover:text-green-600 hover:bg-green-50'}`}
+                    className={`px-5 py-3 flex items-center gap-2.5 rounded-xl font-bold transition-all duration-200 ${
+                        activeTab === 'line' 
+                            ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-100' 
+                            : 'text-stone-500 hover:text-emerald-600 hover:bg-stone-100/60'
+                    }`}
                 >
-                    <MessageCircle size={18} /> LINE Messaging API
+                    <MessageCircle size={18} className={activeTab === 'line' ? 'animate-pulse' : ''} /> LINE Messaging API
                 </button>
                 <button
+                    type="button"
                     onClick={() => setActiveTab('gemini')}
-                    className={`px-6 py-4 flex items-center gap-2 border-b-2 font-bold transition-all ${activeTab === 'gemini' ? 'border-purple-600 text-purple-600' : 'border-transparent text-slate-400 hover:text-purple-600 hover:bg-purple-50'}`}
+                    className={`px-5 py-3 flex items-center gap-2.5 rounded-xl font-bold transition-all duration-200 ${
+                        activeTab === 'gemini' 
+                            ? 'bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white shadow-md shadow-purple-100' 
+                            : 'text-stone-500 hover:text-purple-600 hover:bg-stone-100/60'
+                    }`}
                 >
-                    <Code size={18} /> ตั้งค่า Gemini API (OCR)
+                    <Code size={18} className={activeTab === 'gemini' ? 'animate-pulse' : ''} /> ตั้งค่า Gemini API (OCR)
                 </button>
             </div>
 
             <form onSubmit={handleSave} className="space-y-6">
                 {message && (
-                    <div className={`p-4 rounded-xl flex items-center gap-3 animate-in fade-in slide-in-from-top-2 ${message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
-                        {message.type === 'success' ? <CheckCircle size={20}/> : <AlertTriangle size={20}/>}
-                        <span className="font-bold">{message.text}</span>
+                    <div className={`p-4 rounded-xl flex items-center gap-3 border animate-fade-in-up ${
+                        message.type === 'success' 
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                            : 'bg-rose-50 text-rose-700 border-rose-200'
+                    }`}>
+                        {message.type === 'success' ? <CheckCircle size={20} className="text-emerald-500"/> : <AlertTriangle size={20} className="text-rose-500"/>}
+                        <span className="font-bold text-xs leading-relaxed">{message.text}</span>
                     </div>
                 )}
 
                 {activeTab === 'email' && (
                     <div className="space-y-6">
                         {/* Gmail API Config Section */}
-                        <div className="bg-white rounded-2xl border p-8 shadow-sm space-y-6">
-                            <div className="flex items-center justify-between border-b pb-4">
+                        <div className="glass-card p-6 md:p-8 space-y-6 border border-white/50 shadow-xl">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-200/60 pb-5">
                                 <div>
-                                    <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2"><Key className="text-blue-600"/> ตั้งค่าการเชื่อมต่อ Gmail (OAuth 2.0)</h3>
-                                    <p className="text-sm text-slate-500">ใส่ค่า Client ID จาก Google Cloud Console เพื่ออนุญาตให้ระบบส่งอีเมล</p>
+                                    <h3 className="text-base font-extrabold text-stone-850 flex items-center gap-2">
+                                        <Key className="text-indigo-650" size={20}/> ตั้งค่าการเชื่อมต่อ Gmail (OAuth 2.0)
+                                    </h3>
+                                    <p className="text-xs text-stone-500 font-medium mt-1">ตั้งค่า Client ID จาก Google Cloud Console เพื่ออนุญาตระบบส่งเมล</p>
                                 </div>
-                                <label className="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" className="sr-only peer" checked={config.emailEnabled} onChange={e => setConfig({...config, emailEnabled: e.target.checked})}/>
-                                    <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                                    <span className="ml-3 text-sm font-medium text-slate-700">{config.emailEnabled ? 'เปิดใช้งาน' : 'ปิดใช้งาน'}</span>
+                                <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                                    <input 
+                                        type="checkbox" 
+                                        className="sr-only peer" 
+                                        checked={config.emailEnabled} 
+                                        onChange={e => setConfig({...config, emailEnabled: e.target.checked})}
+                                    />
+                                    <div className="w-11 h-6 bg-stone-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-stone-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                                    <span className="ml-3 text-xs font-bold text-stone-700">{config.emailEnabled ? 'เปิดใช้งาน' : 'ปิดใช้งาน'}</span>
                                 </label>
                             </div>
 
                             <div className="grid grid-cols-1 gap-4">
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-slate-700">Client ID (จำเป็น)</label>
+                                <div className="space-y-1.5">
+                                    <label className="modern-input-label px-1">Client ID (จำเป็น)</label>
                                     <input 
                                         type="text" 
-                                        className="w-full px-4 py-3 border border-slate-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm" 
+                                        className="modern-input font-mono text-xs font-medium" 
                                         value={config.gmailClientId || ''}
                                         onChange={e => setConfig({...config, gmailClientId: e.target.value})}
                                         placeholder="xxxxxxxx-xxxxxxxx.apps.googleusercontent.com"
                                     />
-                                    <p className="text-xs text-slate-400">ค่านี้ได้จาก Google Cloud Console &gt; Credentials &gt; OAuth 2.0 Client ID</p>
+                                    <p className="text-[10px] text-stone-400 font-medium px-1">ได้จาก Google Cloud Console &gt; Credentials &gt; OAuth 2.0 Client ID</p>
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-slate-700">Client Secret (จำเป็นสำหรับการทำงานอัตโนมัติ)</label>
+                                <div className="space-y-1.5">
+                                    <label className="modern-input-label px-1">Client Secret (จำเป็นสำหรับการทำงานอัตโนมัติ)</label>
                                     <div className="relative">
                                         <input 
                                             type={showClientSecret ? "text" : "password"} 
-                                            className="w-full px-4 py-3 border border-slate-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm bg-slate-50 pr-12" 
+                                            className="modern-input font-mono text-xs pr-12 font-medium" 
                                             value={config.gmailClientSecret || ''}
                                             onChange={e => setConfig({...config, gmailClientSecret: e.target.value})}
                                             placeholder="GOCSPX-xxxxxxxxxxxxxxxxx"
@@ -270,89 +294,102 @@ const NotificationSettings: React.FC<NotificationSettingsProps> = ({ user }) => 
                                         <button 
                                             type="button" 
                                             onClick={() => setShowClientSecret(!showClientSecret)}
-                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 transition-colors"
+                                            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-indigo-600 p-1 hover:bg-stone-100 rounded-lg transition-all"
                                         >
-                                            {showClientSecret ? <EyeOff size={20}/> : <Eye size={20}/>}
+                                            {showClientSecret ? <EyeOff size={16}/> : <Eye size={16}/>}
                                         </button>
                                     </div>
-                                    <p className="text-xs text-slate-400">จำเป็นต้องใช้เพื่อขอ Refresh Token สำหรับส่งอีเมลแบบ Offline (เมื่อแอดมินไม่ได้ล็อกอิน)</p>
+                                    <p className="text-[10px] text-stone-400 font-medium px-1">จำเป็นต้องใช้เพื่อขอ Refresh Token สำหรับส่งอีเมลแบบอัตโนมัติโดยที่แอดมินไม่ต้องออนไลน์</p>
                                 </div>
                             </div>
 
-                            <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div className="bg-stone-50/60 rounded-2xl p-4.5 border border-stone-200/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                 <div className="flex items-center gap-3">
-                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${config.gmailRefreshToken ? 'bg-green-100 text-green-600' : 'bg-slate-200 text-slate-500'}`}>
-                                        <Mail size={20}/>
+                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${
+                                        config.gmailRefreshToken 
+                                            ? 'bg-emerald-50 text-emerald-600 border-emerald-100' 
+                                            : 'bg-stone-100 text-stone-400 border-stone-200'
+                                    }`}>
+                                        <Mail size={18}/>
                                     </div>
                                     <div>
-                                        <p className="font-bold text-slate-800">สถานะการเชื่อมต่อ</p>
+                                        <p className="font-bold text-xs text-stone-800">สถานะการเชื่อมต่อ Gmail</p>
                                         {config.gmailRefreshToken ? (
-                                            <div className="flex flex-col">
-                                                <p className="text-xs text-green-600 font-bold flex items-center gap-1"><CheckCircle size={12}/> เชื่อมต่อแล้ว: {config.gmailUserEmail}</p>
-                                                <p className="text-[10px] text-slate-500">ระบบพร้อมส่งอีเมลอัตโนมัติ (Offline Access Active)</p>
+                                            <div className="flex flex-col mt-0.5">
+                                                <p className="text-[11px] text-emerald-600 font-bold flex items-center gap-1">
+                                                    <CheckCircle size={11} className="text-emerald-500"/> เชื่อมต่อแล้ว: {config.gmailUserEmail}
+                                                </p>
+                                                <p className="text-[9.5px] text-stone-400 font-semibold mt-0.5">ระบบเชื่อมต่อสำเร็จและพร้อมทำงานเบื้องหลัง (Offline Access Active)</p>
                                             </div>
                                         ) : (
-                                            <p className="text-xs text-slate-500">ยังไม่ได้เชื่อมต่อ (กรุณากดปุ่มเชื่อมต่อเพื่อขอสิทธิ์)</p>
+                                            <p className="text-[11px] text-stone-450 font-semibold mt-0.5">ยังไม่ได้เชื่อมต่อ (โปรดกรอกข้อมูลข้างต้นและกดปุ่มเชื่อมต่อเพื่อขอสิทธิ์)</p>
                                         )}
                                     </div>
                                 </div>
                                 <button 
                                     type="button" 
                                     onClick={handleGmailAuth}
-                                    className="px-6 py-2 bg-white border border-slate-300 text-slate-700 font-bold rounded-lg shadow-sm hover:bg-slate-50 flex items-center gap-2 active:scale-95 transition-all"
+                                    className="btn btn-secondary font-bold text-xs px-4 py-2.5 rounded-xl border border-stone-200 hover:bg-stone-100 flex items-center gap-1.5 shrink-0"
                                 >
-                                    <LinkIcon size={16}/> {config.gmailRefreshToken ? 'เชื่อมต่อใหม่ (Re-connect)' : 'เชื่อมต่อ Gmail'}
+                                    <LinkIcon size={14}/> {config.gmailRefreshToken ? 'เชื่อมต่อบัญชีใหม่' : 'ขอสิทธิ์การเชื่อมต่อ'}
                                 </button>
                             </div>
                             
-                            <div className="text-xs text-amber-700 bg-amber-50 p-3 rounded-xl border border-amber-200 flex gap-2 items-start">
-                                <AlertTriangle size={16} className="shrink-0 mt-0.5"/>
-                                <div>
-                                    <p className="font-bold">สำคัญ: หากพบ Error 403 หรือ Insufficient Scope</p>
-                                    <p>ตอนกดเชื่อมต่อ และมีหน้าต่าง Google เด้งขึ้นมา <strong>กรุณาติ๊กถูกที่ช่อง "Send email on your behalf" (ส่งอีเมลในนามของคุณ)</strong> ด้วยทุกครั้ง ไม่อย่างนั้นระบบจะส่งอีเมลไม่ได้</p>
+                            <div className="text-xs text-amber-700 bg-amber-50/50 p-4 rounded-2xl border border-amber-200/60 flex gap-2.5 items-start">
+                                <AlertTriangle size={18} className="shrink-0 mt-0.5 text-amber-500"/>
+                                <div className="leading-relaxed">
+                                    <p className="font-bold text-amber-800 text-xs">ข้อควรระวัง: หากพบ Error 403 / Access Blocked</p>
+                                    <p className="text-[11px] text-stone-550 font-medium mt-1">ในหน้าอนุญาตสิทธิ์ของ Google เด้งขึ้นมา <strong>กรุณาติ๊กถูกที่กล่องข้อความ "Send email on your behalf" (ส่งอีเมลในนามของคุณ)</strong> ทุกครั้ง เพื่ออนุญาตให้แอปส่งอีเมลแทนคุณ</p>
                                 </div>
                             </div>
                         </div>
 
                         {/* Email Template Section */}
-                        <div className="bg-white rounded-2xl border p-8 shadow-sm space-y-6">
-                            <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2"><Code className="text-indigo-600"/> รูปแบบข้อความ (Template)</h3>
-                            <div className="space-y-2">
-                                <label className="text-sm font-bold text-slate-700">หัวข้ออีเมล (Subject Template)</label>
+                        <div className="glass-card p-6 md:p-8 space-y-6 border border-white/50 shadow-xl">
+                            <div>
+                                <h3 className="text-base font-extrabold text-stone-850 flex items-center gap-2">
+                                    <Code className="text-indigo-600" size={20}/> รูปแบบข้อความอีเมล (Email Template)
+                                </h3>
+                                <p className="text-xs text-stone-500 font-medium mt-1">ระบุแม่แบบหัวเรื่องและเนื้อความที่จะแจ้งไปยังเจ้าหน้าที่ปลายทาง</p>
+                            </div>
+                            <div className="space-y-1.5">
+                                <label className="modern-input-label px-1">หัวข้ออีเมล (Subject Template)</label>
                                 <input 
                                     type="text" 
-                                    className="w-full px-4 py-3 border border-slate-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" 
+                                    className="modern-input font-bold" 
                                     value={config.emailSubjectTemplate}
                                     onChange={e => setConfig({...config, emailSubjectTemplate: e.target.value})}
                                     placeholder="เช่น แจ้งเตือนเอกสารใหม่: {{subject}}"
                                 />
                              </div>
-                             <div className="space-y-2">
-                                <label className="text-sm font-bold text-slate-700">เนื้อหาอีเมล (Body Template)</label>
+                             <div className="space-y-1.5">
+                                <label className="modern-input-label px-1">เนื้อหาอีเมล (Body Template)</label>
                                 <textarea 
                                     ref={textareaRef}
                                     rows={8}
-                                    className="w-full px-4 py-3 border border-slate-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm" 
+                                    className="modern-textarea font-mono text-xs font-semibold leading-relaxed" 
                                     value={config.emailBodyTemplate}
                                     onChange={e => setConfig({...config, emailBodyTemplate: e.target.value})}
                                     placeholder="เรียน {{recipient_name}}..."
                                 />
                              </div>
 
-                             <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                                <h4 className="font-bold text-slate-700 text-sm mb-3 flex items-center gap-2"><Code size={16}/> เลือกตัวแปรเพื่อแทรกลงในเนื้อหา (คลิกเพื่อเลือก)</h4>
+                             <div className="bg-stone-50/60 p-4.5 rounded-2xl border border-stone-200/50">
+                                <h4 className="font-bold text-stone-750 text-xs mb-3 flex items-center gap-2">
+                                    <Code size={15} className="text-indigo-500"/> คลิกที่ตัวแปรเพื่อแทรกลงในเนื้อหาด้านบน
+                                </h4>
                                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
                                     {AVAILABLE_VARIABLES.map(v => (
                                         <button 
                                             key={v.code}
                                             type="button"
                                             onClick={() => insertVariable(v.code)}
-                                            className="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 rounded-lg hover:border-blue-400 hover:bg-blue-50 hover:text-blue-700 text-xs text-slate-600 transition-all text-left shadow-sm active:scale-95"
+                                            className="flex items-center gap-2 px-3 py-2 bg-white border border-stone-250/70 rounded-xl hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-750 text-xs text-stone-600 transition-all text-left shadow-sm active:scale-95 duration-150"
                                         >
-                                            <Plus size={12} className="shrink-0 text-slate-400"/>
+                                            <Plus size={12} className="shrink-0 text-stone-400"/>
                                             <div className="flex flex-col">
-                                                <span className="font-bold">{v.label}</span>
-                                                <span className="font-mono opacity-70 scale-90 origin-left">{v.code}</span>
+                                                <span className="font-bold text-[10.5px] leading-tight">{v.label}</span>
+                                                <span className="font-mono text-[9px] opacity-70 scale-95 origin-left mt-0.5 text-indigo-600 font-semibold">{v.code}</span>
                                             </div>
                                         </button>
                                     ))}
@@ -363,36 +400,44 @@ const NotificationSettings: React.FC<NotificationSettingsProps> = ({ user }) => 
                 )}
 
                 {activeTab === 'line' && (
-                    <div className="bg-white rounded-2xl border p-8 shadow-sm space-y-6">
-                         <div className="flex items-center justify-between">
+                    <div className="glass-card p-6 md:p-8 space-y-6 border border-white/50 shadow-xl">
+                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-200/60 pb-5">
                             <div>
-                                <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2"><MessageCircle className="text-green-600"/> LINE Messaging API</h3>
-                                <p className="text-sm text-slate-500">ตั้งค่าการเชื่อมต่อกับ LINE Official Account (ยังไม่เปิดใช้งาน)</p>
+                                <h3 className="text-base font-extrabold text-stone-850 flex items-center gap-2">
+                                    <MessageCircle className="text-emerald-600" size={20}/> LINE Messaging API Connection
+                                </h3>
+                                <p className="text-xs text-stone-500 font-medium mt-1">เชื่อมต่อเพื่อรับการแจ้งเตือนและรหัสติดตามหนังสือผ่านทางไลน์ (LINE OA)</p>
                             </div>
-                            <label className="relative inline-flex items-center cursor-pointer opacity-60 cursor-not-allowed">
-                                <input type="checkbox" className="sr-only peer" checked={config.lineEnabled} disabled onChange={e => setConfig({...config, lineEnabled: e.target.checked})}/>
-                                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
-                                <span className="ml-3 text-sm font-medium text-slate-500">เร็วๆ นี้</span>
+                            <label className="relative inline-flex items-center shrink-0 cursor-not-allowed opacity-60">
+                                <input 
+                                    type="checkbox" 
+                                    className="sr-only peer" 
+                                    checked={config.lineEnabled} 
+                                    disabled 
+                                    onChange={e => setConfig({...config, lineEnabled: e.target.checked})}
+                                />
+                                <div className="w-11 h-6 bg-stone-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-stone-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                                <span className="ml-3 text-xs font-bold text-stone-550">เร็วๆ นี้</span>
                             </label>
                         </div>
 
-                        <div className="space-y-4 pt-4 border-t opacity-70 pointer-events-none grayscale">
-                             <div className="space-y-2">
-                                <label className="text-sm font-bold text-slate-700">Channel Access Token</label>
+                        <div className="space-y-4 pt-2 opacity-60 pointer-events-none grayscale">
+                             <div className="space-y-1.5">
+                                <label className="modern-input-label px-1">Channel Access Token</label>
                                 <input 
                                     type="text" 
-                                    className="w-full px-4 py-3 border border-slate-300 rounded-xl outline-none focus:ring-2 focus:ring-green-500 font-mono text-xs" 
+                                    className="modern-input font-mono text-xs" 
                                     value={config.lineChannelAccessToken}
                                     onChange={e => setConfig({...config, lineChannelAccessToken: e.target.value})}
                                     placeholder="Long-lived access token"
                                 />
                              </div>
-                             <div className="space-y-2">
-                                <label className="text-sm font-bold text-slate-700">Channel Secret</label>
+                             <div className="space-y-1.5">
+                                <label className="modern-input-label px-1">Channel Secret</label>
                                 <div className="relative">
                                     <input 
                                         type={showLineSecret ? "text" : "password"}
-                                        className="w-full px-4 py-3 border border-slate-300 rounded-xl outline-none focus:ring-2 focus:ring-green-500 font-mono pr-12" 
+                                        className="modern-input font-mono text-xs pr-12" 
                                         value={config.lineChannelSecret}
                                         onChange={e => setConfig({...config, lineChannelSecret: e.target.value})}
                                         placeholder="Your Channel Secret"
@@ -400,14 +445,15 @@ const NotificationSettings: React.FC<NotificationSettingsProps> = ({ user }) => 
                                     <button 
                                         type="button" 
                                         onClick={() => setShowLineSecret(!showLineSecret)}
-                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-green-600 transition-colors"
+                                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 p-1 hover:bg-stone-100 rounded-lg transition-colors"
                                     >
-                                        {showLineSecret ? <EyeOff size={20}/> : <Eye size={20}/>}
+                                        {showLineSecret ? <EyeOff size={16}/> : <Eye size={16}/>}
                                     </button>
                                 </div>
                              </div>
-                             <div className="bg-amber-50 p-4 rounded-xl border border-amber-200 text-amber-800 text-sm flex items-center gap-2">
-                                <Info size={16}/> ฟังก์ชันนี้อยู่ระหว่างการพัฒนา จะเปิดให้ใช้งานในเวอร์ชันถัดไป
+                             <div className="bg-amber-50/50 p-4 rounded-xl border border-amber-250/50 text-amber-800 text-xs flex items-start gap-2.5">
+                                <Info size={16} className="text-amber-600 shrink-0 mt-0.5"/>
+                                <span className="font-semibold leading-relaxed">ฟังก์ชันการเชื่อมต่อ LINE Messaging API กำลังอยู่ในขั้นตอนพัฒนาเพิ่มความปลอดภัย จะเปิดใช้งานในแพลตฟอร์มเวอร์ชันถัดไป</span>
                              </div>
                         </div>
                     </div>
@@ -415,21 +461,21 @@ const NotificationSettings: React.FC<NotificationSettingsProps> = ({ user }) => 
 
                 {activeTab === 'gemini' && (
                     <div className="space-y-6">
-                        <div className="bg-white rounded-2xl border p-8 shadow-sm space-y-6">
-                            <div className="flex items-center justify-between border-b pb-4">
-                                <div>
-                                    <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2"><Code className="text-purple-600"/> ตั้งค่า Gemini API Key</h3>
-                                    <p className="text-sm text-slate-500">ใช้สำหรับการดึงข้อมูลด้วย OCR จากรูปภาพหนังสือราชการ</p>
-                                </div>
+                        <div className="glass-card p-6 md:p-8 space-y-6 border border-white/50 shadow-xl">
+                            <div className="border-b border-stone-200/60 pb-5">
+                                <h3 className="text-base font-extrabold text-stone-850 flex items-center gap-2">
+                                    <Code className="text-purple-650" size={20}/> ตั้งค่าการเชื่อมต่อ Google Gemini API Key
+                                </h3>
+                                <p className="text-xs text-stone-500 font-medium mt-1">ใช้สำหรับการดึงรายละเอียดเอกสาร เช่น เลขที่ วันที่ และเรื่องอ้างอิง แบบอัตโนมัติด้วย OCR ปัญญาประดิษฐ์</p>
                             </div>
 
                             <div className="space-y-4">
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-slate-700">API Key</label>
+                                <div className="space-y-1.5">
+                                    <label className="modern-input-label px-1">Gemini API Key</label>
                                     <div className="relative">
                                         <input 
                                             type={showGeminiKey ? "text" : "password"}
-                                            className="w-full px-4 py-3 border border-slate-300 rounded-xl outline-none focus:ring-2 focus:ring-purple-500 font-mono pr-12" 
+                                            className="modern-input font-mono text-xs pr-12 font-semibold" 
                                             value={geminiApiKey}
                                             onChange={e => setGeminiApiKey(e.target.value)}
                                             placeholder="AIzaSy..."
@@ -437,13 +483,13 @@ const NotificationSettings: React.FC<NotificationSettingsProps> = ({ user }) => 
                                         <button 
                                             type="button" 
                                             onClick={() => setShowGeminiKey(!showGeminiKey)}
-                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-purple-600 transition-colors"
+                                            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 p-1 hover:bg-stone-100 rounded-lg transition-colors"
                                         >
-                                            {showGeminiKey ? <EyeOff size={20}/> : <Eye size={20}/>}
+                                            {showGeminiKey ? <EyeOff size={16}/> : <Eye size={16}/>}
                                         </button>
                                     </div>
-                                    <p className="text-xs text-slate-400 mt-2">
-                                        สามารถขอ API Key ได้ที่ <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:underline">Google AI Studio</a>
+                                    <p className="text-[10px] text-stone-400 font-medium px-1">
+                                        แอดมินสามารถสร้างและขอรับ API Key ฟรีได้จาก <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-purple-600 font-bold hover:underline">Google AI Studio</a>
                                     </p>
                                 </div>
                             </div>
@@ -451,14 +497,18 @@ const NotificationSettings: React.FC<NotificationSettingsProps> = ({ user }) => 
                     </div>
                 )}
 
-                <div className="flex justify-end pt-4">
-                    <button type="submit" disabled={saving} className="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all active:scale-95 disabled:opacity-50">
-                        {saving ? <Loader2 className="animate-spin" size={20}/> : <Save size={20}/>} บันทึกการตั้งค่า
+                <div className="flex justify-end pt-2">
+                    <button 
+                        type="submit" 
+                        disabled={saving} 
+                        className="btn btn-primary font-bold px-8 py-3.5 shadow-lg shadow-indigo-200/50 hover:-translate-y-0.5 active:translate-y-0 text-sm"
+                    >
+                        {saving ? <Loader2 className="animate-spin" size={18}/> : <Save size={18}/>} บันทึกการตั้งค่าทั้งหมด
                     </button>
                 </div>
             </form>
         </div>
     );
 };
-
 export default NotificationSettings;
+

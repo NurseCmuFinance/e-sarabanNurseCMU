@@ -54,6 +54,7 @@ const fileToBase64 = (file: File): Promise<string> => {
 
 // Use * to avoid errors if specific columns don't exist yet
 const DB_COLUMNS = '*';
+const LIST_DB_COLUMNS = 'id, book_no, book_year, external_book_no, doc_date, registration_date, from_origin, to_recipient_id, recipient_name, subject, status, priority, remark, is_cancelled, tracking_code, created_at, updated_at, sender_type, creator_id';
 
 const cleanPayload = (data: any) => {
     // Keep status here because updateDocument needs it, but createDocument will strip it manually
@@ -449,7 +450,7 @@ const uploadFileToGD = async (file: File, config: StorageConfig, accessToken: st
     return result.webViewLink || `https://drive.google.com/uc?id=${fileId}&export=download`;
 };
 
-const getUploadUrl = async (file: File): Promise<string> => {
+export const getUploadUrl = async (file: File): Promise<string> => {
     try {
         const storageConfig = await getStorageConfig();
         if (storageConfig.googleDriveEnabled && storageConfig.googleDriveRefreshToken) {
@@ -489,7 +490,7 @@ export const createDocument = async (data: any, actor: Profile) => {
         
         if (latestDocs && latestDocs.length > 0) nextNo = (latestDocs[0].book_no || 0) + 1;
         
-        let fileUrl = null;
+        let fileUrl = data.attachment_url || null;
         if (file) { fileUrl = await getUploadUrl(file); }
 
         const initialStatus = actor.role === UserRole.USER ? DocStatus.PENDING_VERIFY : DocStatus.PENDING_ACCEPT;
@@ -605,7 +606,7 @@ export const uploadApprovedFile = async (docId: string, file: File, actor: Profi
 
 export const getDocuments = async (userId: string, role: UserRole): Promise<Document[]> => {
     checkConnection();
-    let q = supabase!.from('documents').select(DB_COLUMNS); 
+    let q = supabase!.from('documents').select(LIST_DB_COLUMNS); 
     
     if (role === UserRole.USER) {
         q = q.eq('creator_id', userId);
@@ -802,7 +803,7 @@ export const saveDataSourceConfig = async (config: DataSourceConfig) => true;
 
 export const searchDocuments = async (query: string): Promise<Document[]> => {
     checkConnection();
-    const { data, error } = await supabase!.from('documents').select(DB_COLUMNS).or(`subject.ilike.%${query}%,external_book_no.ilike.%${query}%,tracking_code.ilike.%${query}%`);
+    const { data, error } = await supabase!.from('documents').select(LIST_DB_COLUMNS).or(`subject.ilike.%${query}%,external_book_no.ilike.%${query}%,tracking_code.ilike.%${query}%`);
     return handleSupabaseResponse<Document[]>(data, error, []);
 };
 
@@ -817,7 +818,7 @@ export const getReportData = async (
 ): Promise<Document[]> => {
     checkConnection();
     // CHANGED: Filter by registration_date instead of doc_date
-    let q = supabase!.from('documents').select(DB_COLUMNS).gte('registration_date', start).lte('registration_date', end);
+    let q = supabase!.from('documents').select(LIST_DB_COLUMNS).gte('registration_date', start).lte('registration_date', end);
     
     if (recipientIds && recipientIds.length > 0) {
         q = q.in('to_recipient_id', recipientIds);
@@ -858,7 +859,7 @@ const getReportDataFallback = async (
     start: string, end: string, recipientIds?: string[], status?: string, 
     departmentIds?: string[], creatorId?: string, priority?: string
 ): Promise<Document[]> => {
-    let q = supabase!.from('documents').select(DB_COLUMNS).gte('doc_date', start).lte('doc_date', end);
+    let q = supabase!.from('documents').select(LIST_DB_COLUMNS).gte('doc_date', start).lte('doc_date', end);
     if (recipientIds && recipientIds.length > 0) q = q.in('to_recipient_id', recipientIds);
     if (status) q = q.eq('status', status);
     if (creatorId) q = q.eq('creator_id', creatorId);

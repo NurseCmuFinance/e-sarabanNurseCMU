@@ -240,29 +240,34 @@ const SmartOCRRegistration: React.FC<SmartOCRRegistrationProps> = ({ user }) => 
   // Step 1: Camera / Upload Mode
   if (!imagePreview) {
     return (
-      <div className="max-w-3xl mx-auto animate-in fade-in duration-300">
+      <div className="max-w-3xl mx-auto animate-fade-in">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-            <Camera className="text-blue-600" /> ลงทะเบียนรับหนังสือด้วยกล้อง (Smart OCR)
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent flex items-center gap-2">
+            <Camera className="text-indigo-600 animate-float animate-pulse" size={28} />
+            ลงทะเบียนรับหนังสือด้วยกล้อง (Smart OCR)
           </h1>
-          <p className="text-slate-500 mt-1">ถ่ายรูปเอกสารเพื่อสกัดข้อมูลและกรอกฟอร์มอัตโนมัติ</p>
+          <p className="text-stone-500 text-sm font-medium mt-1">ถ่ายรูปเอกสารเพื่อสกัดข้อมูลและกรอกฟอร์มอัตโนมัติด้วย AI Gemini</p>
         </div>
 
-        <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 text-center">
-          <div className="w-24 h-24 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Camera size={48} />
+        <div className="glass-card p-10 text-center border border-white/50 shadow-2xl relative overflow-hidden flex flex-col items-center justify-center">
+          <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
+          
+          <div className="w-24 h-24 bg-gradient-to-tr from-indigo-500/10 to-purple-500/10 text-indigo-600 rounded-full flex items-center justify-center mb-6 border border-indigo-200/30 shadow-inner relative animate-float">
+            <Camera size={44} className="text-indigo-600" />
+            <div className="absolute inset-0 rounded-full border border-indigo-400/20 animate-ping opacity-75"></div>
           </div>
-          <h2 className="text-xl font-bold text-slate-800 mb-2">ถ่ายรูปเอกสาร</h2>
-          <p className="text-slate-500 mb-8 max-w-md mx-auto">
-            กรุณาจัดวางเอกสารให้อยู่ในกรอบ แสงสว่างเพียงพอ และตัวหนังสือตั้งตรง เพื่อความแม่นยำในการอ่านข้อมูล
+          
+          <h2 className="text-xl font-extrabold text-stone-800 mb-2">ถ่ายรูปหรืออัปโหลดเอกสาร</h2>
+          <p className="text-stone-500 text-xs font-semibold mb-8 max-w-md leading-relaxed">
+            กรุณาจัดวางเอกสาร (เช่น ใบเสนอราคา บันทึกข้อความ) ให้อยู่ในกรอบ มีแสงสว่างเพียงพอ และตัวหนังสือตั้งตรง เพื่อความแม่นยำสูงสุดในการประมวลผลด้วยปัญญาประดิษฐ์
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
             <button 
               onClick={() => fileInputRef.current?.click()}
-              className="px-8 py-4 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 transition-all active:scale-95 flex items-center gap-2 w-full sm:w-auto justify-center"
+              className="btn btn-primary font-bold px-8 py-4 shadow-lg shadow-indigo-200/50 hover:-translate-y-0.5 active:translate-y-0 text-sm flex items-center justify-center gap-2.5 w-full sm:w-auto"
             >
-              <Camera size={24} /> เปิดกล้อง / เลือกรูปภาพ
+              <Camera size={20} /> เปิดกล้อง / เลือกรูปภาพ
             </button>
             <input 
               type="file" 
@@ -280,75 +285,91 @@ const SmartOCRRegistration: React.FC<SmartOCRRegistrationProps> = ({ user }) => 
 
   // Step 2 & 3: Processing & Review Mode
   return (
-    <div className="max-w-6xl mx-auto animate-in fade-in duration-300">
-      <div className="flex items-center justify-between mb-6">
+    <div className="max-w-6xl mx-auto animate-fade-in">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-            <FileText className="text-blue-600" /> ตรวจสอบข้อมูล (Review & Edit)
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent flex items-center gap-2">
+            <FileText className="text-indigo-600 animate-float" size={28} />
+            ตรวจสอบข้อมูลและสแกนด้วย AI (Review & Edit)
           </h1>
-          <p className="text-slate-500 mt-1">ตรวจสอบความถูกต้องและแก้ไขข้อมูลก่อนบันทึก</p>
+          <p className="text-stone-500 text-sm font-medium mt-1">สกัดข้อมูลสำเร็จแล้ว ตรวจสอบความถูกต้องและปรับแต่งรายละเอียดก่อนบันทึกเข้าระบบ</p>
         </div>
         <button 
           onClick={handleReset}
-          className="px-4 py-2 text-slate-500 font-bold border rounded-xl hover:bg-slate-50 flex items-center gap-2 transition-colors"
+          className="btn text-stone-600 font-bold border border-stone-200 hover:bg-stone-50/80 rounded-xl px-4 py-2.5 flex items-center gap-2 transition-all text-xs"
         >
-          <RefreshCw size={18} /> ถ่ายใหม่
+          <RefreshCw size={14} className="animate-spin-slow" /> ถ่ายใหม่ / อัปโหลดใหม่
         </button>
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm mb-6 border border-red-100 flex items-start gap-3">
-          <AlertCircle size={20} className="shrink-0 mt-0.5"/> 
+        <div className="bg-rose-50 text-rose-700 p-4 rounded-xl text-xs mb-6 border border-rose-200 flex items-start gap-3 animate-fade-in">
+          <AlertCircle size={18} className="shrink-0 mt-0.5 text-rose-500"/> 
           <div>
-            <span className="font-bold block mb-1">เกิดข้อผิดพลาด</span>
-            {error}
+            <span className="font-extrabold block mb-1">เกิดข้อผิดพลาดในการสกัดข้อมูล</span>
+            <span className="font-semibold leading-relaxed">{error}</span>
           </div>
         </div>
       )}
 
       {success && !isProcessing && (
-        <div className="bg-green-50 text-green-600 p-4 rounded-xl text-sm mb-6 border border-green-100 flex items-center gap-2">
-          <CheckCircle2 size={20} className="shrink-0"/> <span>{success}</span>
+        <div className="bg-emerald-50 text-emerald-700 p-4 rounded-xl text-xs mb-6 border border-emerald-200 flex items-center gap-2.5 animate-fade-in">
+          <CheckCircle2 size={18} className="shrink-0 text-emerald-500"/> 
+          <span className="font-extrabold">{success}</span>
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Left Side: Image Preview */}
-        <div className="bg-slate-900 rounded-2xl overflow-hidden shadow-inner relative flex items-center justify-center min-h-[400px] lg:min-h-[600px]">
+        <div className="lg:col-span-5 glass-card p-4 overflow-hidden border border-white/50 shadow-xl flex items-center justify-center min-h-[400px] lg:min-h-[560px] bg-stone-900/90 relative rounded-2xl group">
           {isProcessing ? (
-            <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm flex flex-col items-center justify-center text-white z-10">
-              <Loader2 size={48} className="animate-spin text-blue-500 mb-4" />
-              <p className="font-bold text-lg animate-pulse">กำลังสกัดข้อมูลด้วย AI...</p>
-              <p className="text-slate-400 text-sm mt-2">โปรดรอสักครู่</p>
+            <div className="absolute inset-0 bg-stone-950/80 backdrop-blur-md flex flex-col items-center justify-center text-white z-10 p-6 text-center">
+              <div className="w-16 h-16 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center mb-4 border border-white/10 shadow-lg animate-spin">
+                <Loader2 size={32} className="animate-spin text-white" />
+              </div>
+              <p className="font-extrabold text-lg bg-gradient-to-r from-indigo-200 via-purple-200 to-pink-200 bg-clip-text text-transparent animate-pulse">
+                กำลังวิเคราะห์และสกัดข้อมูลด้วย Gemini AI...
+              </p>
+              <p className="text-stone-400 text-xs font-semibold mt-2 leading-relaxed max-w-xs">
+                ระบบกำลังอ่านลายมือ เขียนเลขที่หนังสือ วันที่ และหัวข้อหลักอย่างชาญฉลาด
+              </p>
             </div>
           ) : null}
           <img 
             src={imagePreview} 
             alt="Document Preview" 
-            className={`max-w-full max-h-full object-contain transition-opacity duration-500 ${isProcessing ? 'opacity-30' : 'opacity-100'}`}
+            className={`max-w-full max-h-[500px] lg:max-h-[520px] object-contain rounded-lg shadow-lg border border-white/10 transition-all duration-500 ${isProcessing ? 'opacity-20 scale-95' : 'opacity-100 scale-100 hover:scale-[1.02]'}`}
           />
         </div>
 
         {/* Right Side: Form */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col">
-          <div className="flex-1 space-y-5">
-            <div className="grid grid-cols-2 gap-4">
+        <div className="lg:col-span-7 glass-card p-6 md:p-8 border border-white/50 shadow-xl flex flex-col rounded-2xl">
+          <div className="border-b border-stone-200/60 pb-4 mb-6">
+            <h3 className="text-base font-extrabold text-stone-850 flex items-center gap-2">
+              <FileText className="text-indigo-650" size={20}/> ข้อมูลที่สกัดได้จากเอกสาร
+            </h3>
+            <p className="text-xs text-stone-500 font-medium mt-1">กรุณาตรวจสอบความถูกต้องของข้อมูลที่ AI อ่านได้ หากไม่ตรงท่านสามารถแก้ไขได้ทันที</p>
+          </div>
+
+          <div className="flex-1 space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-500 uppercase">เลขที่หนังสือ (ที่) <span className="text-red-500">*</span></label>
+                <label className="modern-input-label px-1">เลขที่หนังสือภายนอก (ที่) <span className="text-red-500">*</span></label>
                 <input 
                   type="text" 
-                  className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none transition-all" 
+                  className="modern-input font-semibold" 
                   value={formData.external_book_no}
                   onChange={e => setFormData({...formData, external_book_no: e.target.value})}
                   disabled={isProcessing || isSaving}
                   placeholder="เช่น 8393(7.11.3)/12"
+                  required
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-500 uppercase">ลงวันที่</label>
+                <label className="modern-input-label px-1">ลงวันที่ในหนังสือ</label>
                 <input 
                   type="date" 
-                  className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none transition-all" 
+                  className="modern-input font-semibold text-stone-700" 
                   value={formData.doc_date}
                   onChange={e => setFormData({...formData, doc_date: e.target.value})}
                   disabled={isProcessing || isSaving}
@@ -357,78 +378,84 @@ const SmartOCRRegistration: React.FC<SmartOCRRegistrationProps> = ({ user }) => 
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-500 uppercase">เรื่อง <span className="text-red-500">*</span></label>
+              <label className="modern-input-label px-1">เรื่อง / หัวข้อหนังสือ <span className="text-red-500">*</span></label>
               <textarea 
-                className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none transition-all resize-none h-24" 
+                className="modern-input min-h-[90px] font-semibold leading-relaxed" 
                 value={formData.subject}
                 onChange={e => setFormData({...formData, subject: e.target.value})}
                 disabled={isProcessing || isSaving}
-                placeholder="เรื่องของหนังสือ"
+                placeholder="เรื่องของหนังสือที่แสดงบนเอกสาร..."
+                required
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-500 uppercase">จาก (หน่วยงานเจ้าของเรื่อง)</label>
+              <label className="modern-input-label px-1">จาก (หน่วยงานเจ้าของเรื่อง)</label>
               <SearchableSelect 
                   options={agencies.map(a => ({ id: a.name, label: a.name }))}
                   value={formData.from_origin}
                   onChange={(val) => setFormData({...formData, from_origin: val})}
-                  placeholder="พิมพ์หรือเลือกหน่วยงาน..."
+                  placeholder="พิมพ์หรือเลือกหน่วยงานเจ้าของเรื่อง..."
                   allowCustomInput={true}
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-500 uppercase">เจ้าหน้าที่ผู้รับหนังสือ <span className="text-red-500">*</span></label>
+              <label className="modern-input-label px-1">ส่งถึง / เจ้าหน้าที่ผู้รับหนังสือ <span className="text-red-500">*</span></label>
               <SearchableSelect 
                   options={users.map(u => ({ id: u.id, label: u.full_name, subLabel: u.department_name || 'ไม่ระบุหน่วยงาน' }))}
                   value={formData.to_recipient_id}
                   onChange={(val) => setFormData({...formData, to_recipient_id: val})}
-                  placeholder="พิมพ์ค้นหาชื่อเจ้าหน้าที่..."
+                  placeholder="พิมพ์ค้นหาชื่อเจ้าหน้าที่ผู้รับ..."
               />
             </div>
             
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-500 uppercase">รายละเอียดเพิ่มเติม</label>
+              <label className="modern-input-label px-1">รายละเอียดเพิ่มเติม / หมายเหตุ</label>
               <textarea 
-                className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none transition-all resize-none h-20" 
+                className="modern-input min-h-[70px] font-medium text-xs leading-relaxed" 
                 value={formData.remark}
                 onChange={e => setFormData({...formData, remark: e.target.value})}
                 disabled={isProcessing || isSaving}
-                placeholder="หมายเหตุ หรือรายละเอียดเพิ่มเติม..."
+                placeholder="หมายเหตุ หรือคำสั่งการเพิ่มเติม (ถ้ามี)..."
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-500 uppercase">ความเร่งด่วน</label>
-              <select 
-                className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                value={formData.priority}
-                onChange={e => setFormData({...formData, priority: e.target.value as DocPriority})}
-                disabled={isProcessing || isSaving}
-              >
-                <option value={DocPriority.NORMAL}>ปกติ</option>
-                <option value={DocPriority.URGENT}>ด่วน</option>
-                <option value={DocPriority.EXPRESS}>ด่วนที่สุด</option>
-              </select>
+              <label className="modern-input-label px-1">ความเร่งด่วน</label>
+              <div className="relative">
+                <select 
+                  className="modern-input font-bold appearance-none cursor-pointer pr-10"
+                  value={formData.priority}
+                  onChange={e => setFormData({...formData, priority: e.target.value as DocPriority})}
+                  disabled={isProcessing || isSaving}
+                >
+                  <option value={DocPriority.NORMAL}>🟢 ปกติ</option>
+                  <option value={DocPriority.URGENT}>🟡 ด่วน</option>
+                  <option value={DocPriority.EXPRESS}>🔴 ด่วนที่สุด</option>
+                </select>
+                <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-stone-500">
+                  <svg className="h-4 w-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="pt-6 mt-6 border-t flex gap-4">
+          <div className="pt-6 mt-6 border-t border-stone-200/60 flex flex-col sm:flex-row gap-4">
             <button 
               onClick={handleReset}
               disabled={isProcessing || isSaving}
-              className="flex-1 px-6 py-4 text-slate-600 font-bold border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-50"
+              className="btn text-stone-600 font-bold border border-stone-200 hover:bg-stone-50/80 rounded-xl px-6 py-3.5 transition-all text-xs flex-1 flex items-center justify-center gap-2 disabled:opacity-50"
             >
-              ยกเลิก
+              <X size={16} /> ยกเลิก
             </button>
             <button 
               onClick={handleSave}
-              disabled={isProcessing || isSaving}
-              className="flex-2 px-6 py-4 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
+              disabled={isProcessing || isSaving || !formData.external_book_no || !formData.subject || !formData.to_recipient_id}
+              className="btn btn-primary font-bold px-8 py-3.5 shadow-lg shadow-indigo-200/50 hover:-translate-y-0.5 active:translate-y-0 text-xs flex-[2] flex items-center justify-center gap-2.5 disabled:opacity-50"
             >
-              {isSaving ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
-              บันทึกข้อมูล
+              {isSaving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
+              บันทึกข้อมูลเข้าระบบสารบรรณ
             </button>
           </div>
         </div>

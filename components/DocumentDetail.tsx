@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getDocumentById, getLogs, updateDocumentStatus, uploadApprovedFile, getUsersForSelect, forwardDocument } from '../services/mockService';
@@ -129,11 +128,8 @@ const DocumentDetail: React.FC<DocumentDetailProps> = ({ user, docIdProp, onBack
             }
 
             // Convert Base64 Data URI to Blob for safer/better viewing
-            // Data URI format: "data:application/pdf;base64,..."
             const arr = base64.split(',');
             if (arr.length < 2) {
-                // Try treating the whole string as raw base64 if no prefix
-                // Or inform user if data is invalid
                 console.warn("Invalid data URI format, trying raw base64");
             }
             
@@ -160,14 +156,14 @@ const DocumentDetail: React.FC<DocumentDetailProps> = ({ user, docIdProp, onBack
 
     const getRoleColor = (role?: UserRole | string) => {
         switch (role) {
-            case UserRole.ADMIN: return 'text-orange-600';
-            case UserRole.STAFF: return 'text-purple-600';
-            default: return 'text-slate-500';
+            case UserRole.ADMIN: return 'text-amber-600 bg-amber-500/10 px-2 py-0.5 rounded-md text-[10px] font-bold';
+            case UserRole.STAFF: return 'text-purple-600 bg-purple-500/10 px-2 py-0.5 rounded-md text-[10px] font-bold';
+            default: return 'text-slate-500 bg-slate-500/10 px-2 py-0.5 rounded-md text-[10px] font-bold';
         }
     };
 
-    if (loading) return <div className="p-20 flex flex-col items-center justify-center gap-4"><Loader2 className="animate-spin text-blue-600" size={48}/><p className="text-slate-500 font-bold">กำลังดึงข้อมูล...</p></div>;
-    if (!doc) return <div className="p-20 text-center flex flex-col items-center gap-4"><XCircle size={64} className="text-red-400"/><p className="text-xl font-bold text-slate-800">ไม่พบข้อมูล</p><button onClick={handleBack} className="text-blue-600 font-bold underline">กลับไปหน้าหลัก</button></div>;
+    if (loading) return <div className="p-20 flex flex-col items-center justify-center gap-4"><Loader2 className="animate-spin text-indigo-600" size={48}/><p className="text-slate-500 font-bold">กำลังดึงข้อมูล...</p></div>;
+    if (!doc) return <div className="p-20 text-center flex flex-col items-center gap-4"><XCircle size={64} className="text-rose-455"/><p className="text-xl font-bold text-slate-800">ไม่พบข้อมูล</p><button onClick={handleBack} className="text-indigo-650 font-bold underline">กลับไปหน้าหลัก</button></div>;
 
     const isAdmin = user.role === UserRole.ADMIN;
     const isStaff = user.role === UserRole.STAFF;
@@ -176,15 +172,15 @@ const DocumentDetail: React.FC<DocumentDetailProps> = ({ user, docIdProp, onBack
     
     // Logic for button visibility
     const canAccept = doc.status === DocStatus.PENDING_ACCEPT && (isRecipient || isAdmin);
-    const canVerify = doc.status === DocStatus.PENDING_VERIFY && isAdmin; // New Logic
+    const canVerify = doc.status === DocStatus.PENDING_VERIFY && isAdmin;
     const canApprove = (isAdmin || isStaff || isRecipient) && (doc.status === DocStatus.REGISTERED || doc.status === DocStatus.FORWARDED || doc.status === DocStatus.PROPOSING);
     const canForward = (isAdmin || isStaff || isRecipient || isCreator) && doc.status !== DocStatus.APPROVED && doc.status !== DocStatus.CANCELLED && doc.status !== DocStatus.PENDING_VERIFY;
     const canEdit = isAdmin || isCreator || isRecipient || isStaff;
 
     return (
-        <div className="space-y-6 max-w-6xl mx-auto pb-20 relative">
+        <div className="space-y-6 max-w-6xl mx-auto pb-20 relative animate-fade-in-up">
             {statusMessage && (
-                <div className={`fixed top-20 right-8 z-[200] px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4 ${statusMessage.type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>
+                <div className={`fixed top-20 right-8 z-[200] px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4 ${statusMessage.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'}`}>
                     {statusMessage.type === 'success' ? <CheckCircle size={24}/> : <AlertCircle size={24}/>}
                     <span className="font-bold">{statusMessage.text}</span>
                     <button onClick={() => setStatusMessage(null)} className="ml-4 opacity-50 hover:opacity-100"><X size={20}/></button>
@@ -192,68 +188,217 @@ const DocumentDetail: React.FC<DocumentDetailProps> = ({ user, docIdProp, onBack
             )}
 
             <div className="flex flex-col md:flex-row md:items-center gap-4">
-                <div className="flex items-center gap-4"><button onClick={handleBack} className="p-2 hover:bg-slate-100 rounded-full text-slate-500 transition-colors"><ArrowLeft size={24}/></button><h1 className="text-2xl font-bold text-slate-800">ข้อมูลหนังสือ</h1></div>
+                <div className="flex items-center gap-3">
+                    <button 
+                      onClick={handleBack} 
+                      className="btn btn-icon btn-secondary hover:bg-slate-200/80 rounded-full"
+                    >
+                      <ArrowLeft size={20}/>
+                    </button>
+                    <h1 className="text-2xl font-black text-slate-800 tracking-tight">ข้อมูลหนังสือ</h1>
+                </div>
                 <div className="md:ml-auto flex flex-wrap gap-2">
-                    <button onClick={() => setShowQR(true)} className="p-2 bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition-colors shadow-sm" title="ดู QR Code"><QrCode size={20}/></button>
-                    <button onClick={loadData} className="p-2 hover:bg-slate-100 rounded-lg text-slate-500 transition-colors"><RefreshCw size={20}/></button>
-                    {canEdit && <button onClick={handleEditClick} className="bg-white border text-slate-600 px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-slate-50 transition-all active:scale-95 shadow-sm"><Edit size={18}/> แก้ไขข้อมูล</button>}
+                    <button 
+                      onClick={() => setShowQR(true)} 
+                      className="btn btn-icon btn-secondary" 
+                      title="ดู QR Code"
+                    >
+                      <QrCode size={20}/>
+                    </button>
+                    <button 
+                      onClick={loadData} 
+                      className="btn btn-icon btn-secondary text-slate-500"
+                    >
+                      <RefreshCw size={20}/>
+                    </button>
+                    {canEdit && (
+                      <button 
+                        onClick={handleEditClick} 
+                        className="btn btn-secondary active:scale-95 shadow-sm"
+                      >
+                        <Edit size={18}/> แก้ไขข้อมูล
+                      </button>
+                    )}
                     
                     {/* Admin Actions Group */}
                     {canVerify && (
-                         <button onClick={() => setModalAction('verify')} className="bg-indigo-600 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-indigo-700 active:scale-95 transition-all shadow-md"><ShieldCheck size={18}/> ตรวจสอบและส่งต่อ</button>
+                         <button 
+                           onClick={() => setModalAction('verify')} 
+                           className="btn btn-primary active:scale-95 shadow-md shadow-indigo-500/10"
+                         >
+                           <ShieldCheck size={18}/> ตรวจสอบและส่งต่อ
+                         </button>
                     )}
                     {canAccept && (
                         <>
-                            <button onClick={() => setModalAction('receive')} className="bg-green-600 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-green-700 active:scale-95 transition-all shadow-md"><CheckCircle size={18}/> รับหนังสือ</button>
-                            <button onClick={() => setModalAction('return')} className="bg-orange-500 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-orange-600 active:scale-95 transition-all shadow-md"><RotateCcw size={18}/> ตีกลับ</button>
+                            <button 
+                              onClick={() => setModalAction('receive')} 
+                              className="btn btn-success active:scale-95 shadow-md shadow-emerald-500/10"
+                            >
+                              <CheckCircle size={18}/> รับหนังสือ
+                            </button>
+                            <button 
+                              onClick={() => setModalAction('return')} 
+                              className="btn btn-secondary !border-amber-250 !text-amber-700 hover:bg-amber-50 active:scale-95 shadow-sm"
+                            >
+                              <RotateCcw size={18}/> ตีกลับ
+                            </button>
                         </>
                     )}
                     {canApprove && (
-                        <button onClick={() => setModalAction('approve')} className="bg-emerald-600 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-emerald-700 active:scale-95 transition-all shadow-md"><FileCheck size={18}/> อนุมัติหนังสือ</button>
+                        <button 
+                          onClick={() => setModalAction('approve')} 
+                          className="btn btn-success active:scale-95 shadow-md shadow-emerald-500/10"
+                        >
+                          <FileCheck size={18}/> อนุมัติหนังสือ
+                        </button>
                     )}
-                    {canForward && <button onClick={() => setShowForwardModal(true)} className="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-blue-700 active:scale-95 transition-all shadow-md"><UserPlus size={18}/> ส่งต่อ</button>}
-                    {canEdit && doc.status !== DocStatus.CANCELLED && doc.status !== DocStatus.APPROVED && <button onClick={() => setModalAction('cancel')} className="bg-red-500 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-red-600 active:scale-95 transition-all shadow-md"><XCircle size={18}/> ยกเลิก</button>}
+                    {canForward && (
+                      <button 
+                        onClick={() => setShowForwardModal(true)} 
+                        className="btn btn-primary active:scale-95 shadow-md shadow-indigo-500/10"
+                      >
+                        <UserPlus size={18}/> ส่งต่อ
+                      </button>
+                    )}
+                    {canEdit && doc.status !== DocStatus.CANCELLED && doc.status !== DocStatus.APPROVED && (
+                      <button 
+                        onClick={() => setModalAction('cancel')} 
+                        className="btn btn-danger active:scale-95 shadow-md shadow-rose-500/10"
+                      >
+                        <XCircle size={18}/> ยกเลิก
+                      </button>
+                    )}
                 </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
                 <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-white rounded-xl border p-6 shadow-sm border-t-4 border-t-blue-600 relative">
-                        <div className="absolute right-6 top-6 opacity-10 pointer-events-none"><FileText size={120}/></div>
-                        <div className="flex justify-between items-start mb-6"><div className="min-w-0 flex-1 relative z-10"><StatusBadge status={doc.status} /><h2 className="text-2xl font-bold text-slate-900 mt-2 mb-1 leading-tight">{doc.subject}</h2><p className="text-blue-600 font-bold text-lg">เลขรับ: {doc.book_no ? `${doc.book_no}/${doc.book_year}` : 'รอกดรับ'}</p></div></div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-5 gap-x-8 text-sm border-t pt-6 relative z-10">
-                            <div><p className="text-slate-500 font-bold mb-1 text-[10px] uppercase">เลขที่หนังสือ (ต้นทาง)</p><p className="font-bold text-slate-800 text-base">{doc.external_book_no || '-'}</p></div>
-                            <div><p className="text-slate-500 font-bold mb-1 text-[10px] uppercase">ลงวันที่</p><p className="font-bold text-slate-800 text-base">{new Date(doc.doc_date).toLocaleDateString('th-TH', { dateStyle: 'long' })}</p></div>
+                    <div className="glass-card p-6 border-t-4 border-t-indigo-500 relative overflow-hidden animate-fade-in-up">
+                        <div className="absolute right-6 top-6 opacity-5 pointer-events-none"><FileText size={140}/></div>
+                        <div className="flex justify-between items-start mb-6">
+                          <div className="min-w-0 flex-1 relative z-10">
+                            <StatusBadge status={doc.status} />
+                            <h2 className="text-2xl font-black text-slate-800 mt-3 mb-1 leading-tight tracking-tight">
+                              {doc.subject}
+                            </h2>
+                            <p className="text-indigo-600 font-extrabold text-lg mt-1">
+                              เลขรับ: {doc.book_no ? `${doc.book_no}/${doc.book_year}` : 'รอกดรับ'}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-5 gap-x-8 text-sm border-t border-slate-200/50 pt-6 relative z-10">
                             <div>
-                                <p className="text-slate-500 font-bold mb-1 text-[10px] uppercase text-blue-600">วันที่ลงทะเบียนรับเข้า</p>
-                                <p className="font-bold text-blue-800 text-base">
+                              <p className="text-slate-400 font-black mb-1 text-[10px] uppercase tracking-wider">เลขที่หนังสือ (ต้นทาง)</p>
+                              <p className="font-bold text-slate-800 text-base">{doc.external_book_no || '-'}</p>
+                            </div>
+                            <div>
+                              <p className="text-slate-400 font-black mb-1 text-[10px] uppercase tracking-wider">ลงวันที่</p>
+                              <p className="font-bold text-slate-800 text-base">{new Date(doc.doc_date).toLocaleDateString('th-TH', { dateStyle: 'long' })}</p>
+                            </div>
+                            <div>
+                                <p className="text-indigo-650 font-black mb-1 text-[10px] uppercase tracking-wider">วันที่ลงทะเบียนรับเข้า</p>
+                                <p className="font-bold text-indigo-800 text-base">
                                     {doc.registration_date ? new Date(doc.registration_date).toLocaleDateString('th-TH', { dateStyle: 'long' }) : '-'}
                                 </p>
                             </div>
-                            <div><p className="text-slate-500 font-bold mb-1 text-[10px] uppercase">จากหน่วยงาน</p><p className="font-bold text-slate-800 text-base">{doc.from_origin}</p></div>
-                            <div><p className="text-slate-500 font-bold mb-1 text-[10px] uppercase">เจ้าหน้าที่ผู้รับ</p><p className="font-bold text-blue-700 text-base">{doc.recipient_name || 'ไม่ได้ระบุ'}</p></div>
-                            <div className="col-span-1 sm:col-span-2"><p className="text-slate-500 font-bold mb-1 text-[10px] uppercase">Tracking Code</p><p className="font-mono bg-blue-50 px-4 py-2 rounded-lg border border-blue-100 inline-block text-blue-700 font-bold mt-1 text-lg">{doc.tracking_code}</p></div>
-                            {doc.remark && <div className="col-span-1 sm:col-span-2 bg-slate-50 p-4 rounded-xl border"><p className="text-slate-500 font-bold mb-1 text-[10px] uppercase">หมายเหตุ</p><p className="text-slate-800 italic">{doc.remark}</p></div>}
+                            <div>
+                              <p className="text-slate-400 font-black mb-1 text-[10px] uppercase tracking-wider">จากหน่วยงาน</p>
+                              <p className="font-bold text-slate-800 text-base">{doc.from_origin}</p>
+                            </div>
+                            <div>
+                              <p className="text-slate-400 font-black mb-1 text-[10px] uppercase tracking-wider">เจ้าหน้าที่ผู้รับ</p>
+                              <p className="font-bold text-indigo-750 text-base">{doc.recipient_name || 'ไม่ได้ระบุ'}</p>
+                            </div>
+                            <div className="col-span-1 sm:col-span-2">
+                              <p className="text-slate-400 font-black mb-1 text-[10px] uppercase tracking-wider">Tracking Code</p>
+                              <p className="font-mono bg-indigo-500/5 px-4 py-2.5 rounded-xl border border-indigo-500/10 inline-block text-indigo-700 font-bold mt-1.5 text-lg shadow-sm">
+                                {doc.tracking_code}
+                              </p>
+                            </div>
+                            {doc.remark && (
+                              <div className="col-span-1 sm:col-span-2 bg-slate-50/50 p-4 rounded-xl border border-slate-200/50">
+                                <p className="text-slate-400 font-black mb-1 text-[10px] uppercase tracking-wider">หมายเหตุ</p>
+                                <p className="text-slate-700 italic font-medium">{doc.remark}</p>
+                              </div>
+                            )}
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
-                        <div className="bg-slate-50 px-6 py-4 border-b"><h3 className="font-bold text-slate-700 flex items-center gap-2"><FileText size={20}/> เอกสารแนบ</h3></div>
+                    <div className="glass-card overflow-hidden animate-fade-in-up">
+                        <div className="bg-slate-50/20 px-6 py-4 border-b border-slate-200/50 backdrop-blur-md">
+                          <h3 className="font-black text-slate-700 flex items-center gap-2">
+                            <FileText size={18} className="text-indigo-500"/> เอกสารแนบ
+                          </h3>
+                        </div>
                         <div className="p-6">
                             {!doc.attachment_url && !doc.approved_attachment_url ? (
-                                <div className="text-center py-10 text-slate-400 italic"><FileIcon size={40} className="mx-auto mb-3 opacity-20" />ไม่พบไฟล์แนบ</div>
+                                <div className="text-center py-10 text-slate-400 font-semibold italic flex flex-col items-center justify-center gap-2">
+                                  <FileIcon size={40} className="opacity-25" />
+                                  <span>ไม่พบไฟล์แนบ</span>
+                                </div>
                             ) : (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {doc.attachment_url && (
-                                        <div className="flex items-center justify-between p-4 bg-slate-50 border rounded-xl hover:bg-blue-50 transition-all group">
-                                            <div className="flex items-center gap-4"><div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center"><FileText size={20} /></div><div><p className="font-bold text-slate-800 text-sm">เอกสารต้นฉบับ</p></div></div>
-                                            <button onClick={() => openPdf(doc.attachment_url!)} className="bg-white border border-blue-200 text-blue-600 px-4 py-2 rounded-lg font-bold hover:bg-blue-600 hover:text-white transition-all shadow-sm flex items-center gap-1.5 text-sm"><Eye size={16} /> เปิดดู</button>
-                                        </div>
-                                    )}
+                                    {/* Render all original attachments */}
+                                    {(() => {
+                                        if (!doc.attachment_url) return null;
+                                        let parsed: { name: string, url: string }[] = [];
+                                        try {
+                                            if (doc.attachment_url.startsWith('[')) {
+                                                parsed = JSON.parse(doc.attachment_url);
+                                            } else {
+                                                parsed = [{ name: 'เอกสารต้นฉบับ.pdf', url: doc.attachment_url }];
+                                            }
+                                        } catch (e) {
+                                            parsed = [{ name: 'เอกสารต้นฉบับ.pdf', url: doc.attachment_url }];
+                                        }
+
+                                        return parsed.map((file, i) => (
+                                            <div 
+                                              key={i} 
+                                              className="flex items-center justify-between p-4 bg-white/60 border border-slate-200/50 rounded-2xl hover:bg-indigo-50/10 hover:border-indigo-200/50 transition-all group min-w-0 shadow-sm"
+                                            >
+                                                <div className="flex items-center gap-3.5 min-w-0 flex-1 mr-4">
+                                                    <div className="w-10 h-10 bg-indigo-500/10 text-indigo-600 rounded-xl flex items-center justify-center shrink-0">
+                                                      <FileText size={20} />
+                                                    </div>
+                                                    <div className="min-w-0">
+                                                      <p className="font-bold text-slate-800 text-sm truncate" title={file.name}>
+                                                        {file.name}
+                                                      </p>
+                                                      <p className="text-[10px] text-slate-400 font-semibold">ไฟล์แนบ #{i+1}</p>
+                                                    </div>
+                                                </div>
+                                                <button 
+                                                  onClick={() => openPdf(file.url)} 
+                                                  className="btn btn-sm btn-secondary shadow-sm"
+                                                >
+                                                  <Eye size={14} /> เปิดดู
+                                                </button>
+                                            </div>
+                                        ));
+                                    })()}
+                                    
+                                    {/* Render Approved attachment */}
                                     {doc.approved_attachment_url && (
-                                        <div className="flex items-center justify-between p-4 bg-green-50 border border-green-200 rounded-xl hover:bg-green-100 transition-all group">
-                                            <div className="flex items-center gap-4"><div className="w-10 h-10 bg-green-100 text-green-600 rounded-lg flex items-center justify-center"><CheckCircle size={20} /></div><div><p className="font-bold text-green-800 text-sm">เอกสารอนุมัติแล้ว</p></div></div>
-                                            <button onClick={() => openPdf(doc.approved_attachment_url!)} className="bg-white border border-green-200 text-green-600 px-4 py-2 rounded-lg font-bold hover:bg-green-600 hover:text-white transition-all shadow-sm flex items-center gap-1.5 text-sm"><Eye size={16} /> เปิดดู</button>
+                                        <div className="flex items-center justify-between p-4 bg-emerald-500/5 border border-emerald-500/10 rounded-2xl hover:bg-emerald-500/10 transition-all group min-w-0 md:col-span-2 shadow-sm">
+                                            <div className="flex items-center gap-3.5 min-w-0 flex-1 mr-4">
+                                                <div className="w-10 h-10 bg-emerald-550/10 text-emerald-600 rounded-xl flex items-center justify-center shrink-0">
+                                                  <CheckCircle size={20} />
+                                                </div>
+                                                <div className="min-w-0">
+                                                  <p className="font-black text-emerald-800 text-sm truncate" title="เอกสารอนุมัติแล้ว.pdf">
+                                                    เอกสารอนุมัติแล้ว.pdf
+                                                  </p>
+                                                  <p className="text-[10px] text-emerald-600 font-bold">ลงนามและอนุมัติเสร็จสิ้น</p>
+                                                </div>
+                                            </div>
+                                            <button 
+                                              onClick={() => openPdf(doc.approved_attachment_url!)} 
+                                              className="btn btn-sm btn-success shadow-sm"
+                                            >
+                                              <Eye size={14} /> เปิดดู
+                                            </button>
                                         </div>
                                     )}
                                 </div>
@@ -263,19 +408,28 @@ const DocumentDetail: React.FC<DocumentDetailProps> = ({ user, docIdProp, onBack
                 </div>
 
                 <div className="space-y-6">
-                    <div className="bg-white rounded-xl border p-6 shadow-sm sticky top-6">
-                        <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-3"><Clock size={18}/> ประวัติเส้นทาง</h3>
+                    <div className="glass-card p-6 sticky top-6 animate-fade-in-up">
+                        <h3 className="font-black text-slate-800 mb-4 flex items-center gap-2 border-b border-slate-200/50 pb-3">
+                          <Clock size={18} className="text-indigo-500"/> ประวัติเส้นทาง
+                        </h3>
                         <div className="max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
-                            <div className="relative border-l-2 border-slate-100 ml-2 space-y-8 pl-6 pt-2 pb-2">
-                                {logs.length === 0 ? <p className="text-slate-400 text-xs italic">ไม่มีข้อมูลประวัติ</p> : logs.map((log, i) => (
+                            <div className="relative border-l border-slate-200/80 ml-2.5 space-y-6 pl-5 pt-1.5 pb-1.5">
+                                {logs.length === 0 ? (
+                                  <p className="text-slate-450 text-xs italic font-semibold">ไม่มีข้อมูลประวัติ</p>
+                                ) : logs.map((log, i) => (
                                     <div key={log.id} className="relative">
-                                        <div className={`absolute -left-[31px] top-1 w-4 h-4 rounded-full border-2 border-white shadow-sm ${i === 0 ? 'bg-blue-600 ring-4 ring-blue-50' : 'bg-slate-300'}`}></div>
-                                        <p className="text-[10px] text-slate-400 font-bold mb-1 uppercase">{new Date(log.timestamp).toLocaleString('th-TH')}</p>
-                                        <p className="text-sm font-bold text-slate-800">{log.action}</p>
-                                        <div className="mt-1 bg-slate-50 p-3 rounded-lg text-xs text-slate-600 italic border border-slate-100">{log.details}</div>
-                                        <div className="mt-2 flex items-center gap-1.5">
-                                            <User size={14} className={getRoleColor(log.actor_role)}/>
-                                            <p className={`text-sm font-bold ${getRoleColor(log.actor_role)}`}>{log.actor_name}</p>
+                                        <div className={`absolute -left-[26px] top-1.5 w-3.5 h-3.5 rounded-full border-2 border-white shadow-sm transition-all ${
+                                          i === 0 ? 'bg-indigo-600 ring-4 ring-indigo-500/10 scale-110' : 'bg-slate-300'
+                                        }`}></div>
+                                        <p className="text-[10px] text-slate-400 font-black mb-1 tracking-wider uppercase">
+                                          {new Date(log.timestamp).toLocaleString('th-TH')}
+                                        </p>
+                                        <p className="text-xs font-black text-slate-800">{log.action}</p>
+                                        <div className="mt-1 bg-white/50 p-3 rounded-xl text-xs text-slate-600 font-medium italic border border-slate-200/40 shadow-sm leading-relaxed">
+                                          {log.details}
+                                        </div>
+                                        <div className="mt-2 flex items-center gap-2">
+                                            <span className={getRoleColor(log.actor_role)}>{log.actor_name}</span>
                                         </div>
                                     </div>
                                 ))}
@@ -287,19 +441,24 @@ const DocumentDetail: React.FC<DocumentDetailProps> = ({ user, docIdProp, onBack
 
             {/* QR Modal */}
             {showQR && (
-                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[300] flex items-center justify-center p-4">
-                    <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full text-center relative animate-in zoom-in-95 duration-200">
-                         <button onClick={() => setShowQR(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><X size={24}/></button>
-                         <h3 className="text-xl font-bold text-slate-800 mb-2">QR Code สำหรับติดตาม</h3>
-                         <p className="text-slate-500 text-sm mb-6">ใช้แอปพลิเคชันสแกนเพื่อดูสถานะหรือรับเอกสาร</p>
+                <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[300] flex items-center justify-center p-4 animate-in fade-in duration-300">
+                    <div className="glass-modal max-w-sm w-full p-8 text-center relative animate-fade-in-scale shadow-2xl">
+                         <button 
+                           onClick={() => setShowQR(false)} 
+                           className="absolute top-5 right-5 text-slate-400 hover:text-slate-600 transition-colors"
+                         >
+                           <X size={20}/>
+                         </button>
+                         <h3 className="text-xl font-black text-slate-800 mb-2">QR Code สำหรับติดตาม</h3>
+                         <p className="text-slate-500 text-xs font-semibold mb-6">ใช้แอปพลิเคชันสแกนเพื่อดูสถานะหรือรับเอกสาร</p>
                          
-                         <div className="bg-white p-4 border-2 border-slate-900 rounded-xl inline-block mb-4 shadow-inner">
-                            <img src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${doc.tracking_code}`} alt="QR Code" className="w-48 h-48" />
+                         <div className="bg-white p-4 border border-slate-200 rounded-2xl inline-block mb-4 shadow-sm">
+                            <img src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${doc.tracking_code}`} alt="QR Code" className="w-44 h-44" />
                          </div>
                          
-                         <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
-                            <p className="text-[10px] text-slate-400 font-bold uppercase">Tracking Code</p>
-                            <p className="font-mono text-lg font-bold text-blue-600 tracking-wider">{doc.tracking_code}</p>
+                         <div className="bg-slate-50/80 p-3 rounded-2xl border border-slate-200/50 shadow-inner">
+                            <p className="text-[10px] text-slate-400 font-black uppercase tracking-wider">Tracking Code</p>
+                            <p className="font-mono text-lg font-black text-indigo-650 tracking-widest mt-0.5">{doc.tracking_code}</p>
                          </div>
                     </div>
                 </div>
@@ -307,15 +466,20 @@ const DocumentDetail: React.FC<DocumentDetailProps> = ({ user, docIdProp, onBack
             
             {/* Forward Modal */}
             {showForwardModal && (
-                <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[300] flex items-center justify-center p-4">
-                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 text-left">
-                        <div className="p-6 border-b flex justify-between items-center bg-blue-50 text-blue-800">
-                            <h3 className="font-bold flex items-center gap-2"><UserPlus size={20}/> ส่งต่อหนังสือ</h3>
-                            <button onClick={() => setShowForwardModal(false)}><X size={20}/></button>
+                <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[300] flex items-center justify-center p-4 animate-in fade-in duration-300">
+                    <div className="glass-modal w-full max-w-md overflow-hidden animate-fade-in-scale shadow-2xl text-left">
+                        <div className="p-6 border-b border-slate-200/50 flex justify-between items-center bg-indigo-50/20 text-indigo-900">
+                            <h3 className="font-black flex items-center gap-2 text-lg"><UserPlus size={20} className="text-indigo-600"/> ส่งต่อหนังสือ</h3>
+                            <button 
+                              onClick={() => setShowForwardModal(false)}
+                              className="text-slate-400 hover:text-slate-600 transition-colors"
+                            >
+                              <X size={20}/>
+                            </button>
                         </div>
                         <div className="p-6 space-y-4">
                             <div className="space-y-2">
-                                <label className="text-sm font-bold text-slate-700">ส่งต่อถึงเจ้าหน้าที่</label>
+                                <label className="modern-input-label">ส่งต่อถึงเจ้าหน้าที่</label>
                                 <SearchableSelect 
                                     options={staffList.map(u => ({ id: u.id, label: u.full_name, subLabel: u.department_name }))} 
                                     value={forwardToId} 
@@ -324,21 +488,27 @@ const DocumentDetail: React.FC<DocumentDetailProps> = ({ user, docIdProp, onBack
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-sm font-bold text-slate-700">หมายเหตุ/คำสั่งการ</label>
+                                <label className="modern-input-label">หมายเหตุ/คำสั่งการ</label>
                                 <textarea 
                                     rows={3} 
-                                    className="w-full px-4 py-3 border border-slate-300 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 text-sm" 
+                                    className="modern-textarea" 
                                     value={modalReason} 
                                     onChange={e => setModalReason(e.target.value)} 
                                     placeholder="ระบุรายละเอียด..."
                                 ></textarea>
                             </div>
                             <div className="pt-2 flex gap-3">
-                                <button type="button" onClick={() => setShowForwardModal(false)} className="flex-1 px-4 py-3 text-slate-500 font-bold hover:bg-slate-50 rounded-2xl border transition-all">ยกเลิก</button>
+                                <button 
+                                  type="button" 
+                                  onClick={() => setShowForwardModal(false)} 
+                                  className="flex-1 btn btn-secondary"
+                                >
+                                  ยกเลิก
+                                </button>
                                 <button 
                                     onClick={handleForwardExecute} 
                                     disabled={actionLoading || !forwardToId} 
-                                    className="flex-1 bg-blue-600 text-white font-bold py-3 rounded-2xl shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50 hover:bg-blue-700"
+                                    className="flex-1 btn btn-primary shadow-lg shadow-indigo-500/10"
                                 >
                                     {actionLoading ? <Loader2 className="animate-spin" size={18}/> : <Send size={18}/>} ยืนยันส่งต่อ
                                 </button>
@@ -350,57 +520,83 @@ const DocumentDetail: React.FC<DocumentDetailProps> = ({ user, docIdProp, onBack
 
             {/* General Actions Modal (Receive, Return, Cancel, Approve, Verify) */}
             {modalAction && (
-                <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[300] flex items-center justify-center p-4">
-                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 text-left">
-                        <div className={`p-6 border-b flex justify-between items-center ${
-                            modalAction === 'receive' ? 'bg-green-50 text-green-800' : 
-                            modalAction === 'return' ? 'bg-orange-50 text-orange-800' : 
-                            modalAction === 'approve' ? 'bg-emerald-50 text-emerald-800' :
-                            modalAction === 'verify' ? 'bg-indigo-50 text-indigo-800' :
-                            'bg-red-50 text-red-800'
+                <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[300] flex items-center justify-center p-4 animate-in fade-in duration-300">
+                    <div className="glass-modal w-full max-w-md overflow-hidden animate-fade-in-scale shadow-2xl text-left">
+                        <div className={`p-6 border-b border-slate-200/50 flex justify-between items-center ${
+                            modalAction === 'receive' ? 'bg-emerald-500/10 text-emerald-900' : 
+                            modalAction === 'return' ? 'bg-amber-500/10 text-amber-900' : 
+                            modalAction === 'approve' ? 'bg-emerald-500/10 text-emerald-900' :
+                            modalAction === 'verify' ? 'bg-indigo-500/10 text-indigo-900' :
+                            'bg-rose-500/10 text-rose-900'
                         }`}>
-                            <h3 className="font-bold flex items-center gap-2">
+                            <h3 className="font-black flex items-center gap-2 text-lg">
                                 {modalAction === 'receive' && 'รับหนังสือ'}
                                 {modalAction === 'return' && 'ตีกลับหนังสือ'}
                                 {modalAction === 'cancel' && 'ยกเลิกหนังสือ'}
                                 {modalAction === 'approve' && 'อนุมัติหนังสือ'}
                                 {modalAction === 'verify' && 'ตรวจสอบและส่งต่อ'}
                             </h3>
-                            <button onClick={() => setModalAction(null)}><X size={20}/></button>
+                            <button 
+                              onClick={() => setModalAction(null)}
+                              className="text-slate-400 hover:text-slate-650"
+                            >
+                              <X size={20}/>
+                            </button>
                         </div>
                         <div className="p-6 space-y-4">
                             {modalAction === 'approve' ? (
                                 <div className="space-y-4">
-                                    <p className="text-slate-600 font-medium">โปรดอัปโหลดไฟล์ PDF ที่มีการลงนามหรืออนุมัติแล้วเพื่อเปลี่ยนสถานะเป็น <span className="text-emerald-600 font-bold">อนุมัติแล้ว</span></p>
-                                    <div className="border-2 border-dashed border-emerald-200 rounded-2xl p-8 text-center hover:bg-emerald-50 transition-all cursor-pointer relative bg-emerald-50/20">
+                                    <p className="text-slate-600 font-semibold text-sm">
+                                      โปรดอัปโหลดไฟล์ PDF ที่มีการลงนามหรืออนุมัติแล้วเพื่อเปลี่ยนสถานะเป็น <span className="text-emerald-600 font-extrabold">อนุมัติแล้ว</span>
+                                    </p>
+                                    <div className="border-2 border-dashed border-emerald-250 hover:border-emerald-500 rounded-2xl p-8 text-center hover:bg-emerald-50/10 transition-all cursor-pointer relative bg-emerald-50/5">
                                         <input type="file" id="modal-approve-file" className="hidden" accept=".pdf" onChange={e => e.target.files && setApprovedFile(e.target.files[0])} />
                                         <label htmlFor="modal-approve-file" className="cursor-pointer flex flex-col items-center gap-3">
                                             <Upload size={32} className="text-emerald-500"/>
-                                            <span className="text-emerald-700 font-bold text-sm">
+                                            <span className="text-emerald-800 font-bold text-xs">
                                                 {approvedFile ? approvedFile.name : 'คลิกเพื่อเลือกไฟล์ PDF'}
                                             </span>
                                         </label>
                                     </div>
                                 </div>
                             ) : modalAction === 'verify' ? (
-                                <p className="text-slate-600 font-medium">ยืนยันว่าเอกสารนี้ถูกต้องและต้องการส่งต่อให้เจ้าหน้าที่ <span className="text-indigo-600 font-bold">{doc.recipient_name}</span> เพื่อดำเนินการต่อ?</p>
+                                <p className="text-slate-600 font-semibold text-sm leading-relaxed">
+                                  ยืนยันว่าเอกสารนี้ถูกต้องและต้องการส่งต่อให้เจ้าหน้าที่ <span className="text-indigo-650 font-extrabold">{doc.recipient_name}</span> เพื่อดำเนินการต่อ?
+                                </p>
                             ) : (
                                 <>
-                                    <p className="text-slate-600 font-medium">ยืนยันการดำเนินการ {modalAction === 'receive' ? 'รับเข้าสารบรรณ' : modalAction === 'return' ? 'ตีกลับเพื่อแก้ไข' : 'ยกเลิกหนังสือถาวร'}?</p>
-                                    {(modalAction === 'return' || modalAction === 'cancel') && <textarea rows={3} autoFocus className="w-full px-4 py-3 border border-slate-300 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 text-sm" value={modalReason} onChange={e => setModalReason(e.target.value)} placeholder="ระบุเหตุผล..."></textarea>}
+                                    <p className="text-slate-600 font-semibold text-sm">
+                                      ยืนยันการดำเนินการ {modalAction === 'receive' ? 'รับเข้าสารบรรณ' : modalAction === 'return' ? 'ตีกลับเพื่อแก้ไข' : 'ยกเลิกหนังสือถาวร'}?
+                                    </p>
+                                    {(modalAction === 'return' || modalAction === 'cancel') && (
+                                      <textarea 
+                                        rows={3} 
+                                        autoFocus 
+                                        className="modern-textarea" 
+                                        value={modalReason} 
+                                        onChange={e => setModalReason(e.target.value)} 
+                                        placeholder="ระบุเหตุผลประกอบ..."
+                                      ></textarea>
+                                    )}
                                 </>
                             )}
                             <div className="pt-2 flex gap-3">
-                                <button type="button" onClick={() => setModalAction(null)} className="flex-1 px-4 py-3 text-slate-500 font-bold hover:bg-slate-50 rounded-2xl border transition-all">ยกเลิก</button>
+                                <button 
+                                  type="button" 
+                                  onClick={() => setModalAction(null)} 
+                                  className="flex-1 btn btn-secondary"
+                                >
+                                  ยกเลิก
+                                </button>
                                 <button 
                                     onClick={handleActionExecute} 
                                     disabled={actionLoading || (modalAction === 'return' && !modalReason.trim()) || (modalAction === 'approve' && !approvedFile)} 
-                                    className={`flex-1 text-white font-bold py-3 rounded-2xl shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50 ${
-                                        modalAction === 'receive' ? 'bg-green-600 hover:bg-green-700' : 
-                                        modalAction === 'return' ? 'bg-orange-500 hover:bg-orange-600' : 
-                                        modalAction === 'approve' ? 'bg-emerald-600 hover:bg-emerald-700' :
-                                        modalAction === 'verify' ? 'bg-indigo-600 hover:bg-indigo-700' :
-                                        'bg-red-600 hover:bg-red-700'
+                                    className={`flex-1 btn shadow-lg ${
+                                        modalAction === 'receive' ? 'btn-success shadow-emerald-500/10' : 
+                                        modalAction === 'return' ? 'btn-primary bg-amber-600 hover:bg-amber-700 shadow-amber-500/10' : 
+                                        modalAction === 'approve' ? 'btn-success shadow-emerald-500/10' :
+                                        modalAction === 'verify' ? 'btn-primary shadow-indigo-500/10' :
+                                        'btn-danger shadow-rose-500/10'
                                     }`}
                                 >
                                     {actionLoading ? <Loader2 className="animate-spin" size={18}/> : <CheckCircle size={18}/>} ยืนยัน

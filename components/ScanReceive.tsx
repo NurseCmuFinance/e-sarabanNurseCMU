@@ -225,22 +225,25 @@ const ScanReceive: React.FC<ScanReceiveProps> = ({ user }) => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <div className="text-center space-y-2">
-         <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto">
-            <QrCode size={32} />
+    <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
+      {/* Page Header */}
+      <div className="text-center space-y-3 page-header">
+         <div className="w-16 h-16 bg-gradient-to-tr from-indigo-500 to-purple-500 text-white rounded-2xl flex items-center justify-center mx-auto shadow-md shadow-indigo-200/50 border border-indigo-400/30 animate-float">
+            <QrCode size={30} />
          </div>
-         <h1 className="text-2xl font-bold text-slate-800">สแกนรับหนังสือ (Scan to Receive)</h1>
-         <p className="text-slate-500">ส่องกล้องไปที่ QR Code เพื่อรับหนังสือเข้าระบบอัตโนมัติ</p>
+         <h1 className="page-title bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent inline-block font-extrabold text-3xl">
+            สแกนรับหนังสือ (Scan to Receive)
+         </h1>
+         <p className="text-stone-500 text-sm font-medium">ส่องกล้องไปที่ QR Code หรือระบุรหัสเพื่อรับหนังสือเข้าระบบอัตโนมัติ</p>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-xl border overflow-hidden">
-         {/* Camera Viewport */}
-         <div className="relative bg-black min-h-[300px] flex flex-col items-center justify-center overflow-hidden">
+      <div className="glass-card overflow-hidden border border-white/50 shadow-xl">
+         {/* Camera Viewport with Glass Border Overlay */}
+         <div className="relative bg-stone-950 min-h-[300px] flex flex-col items-center justify-center overflow-hidden border-b border-stone-200/60">
             {!cameraReady && !error && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-white/70 z-10 bg-slate-900">
-                    <Loader2 size={48} className="animate-spin mb-4"/>
-                    <p>กำลังเปิดกล้อง...</p>
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-white/80 z-10 bg-stone-900/90 backdrop-blur-md">
+                    <Loader2 size={40} className="animate-spin mb-3 text-indigo-400"/>
+                    <p className="text-sm font-bold tracking-wider">กำลังเปิดกล้อง...</p>
                 </div>
             )}
             
@@ -248,32 +251,39 @@ const ScanReceive: React.FC<ScanReceiveProps> = ({ user }) => {
             <div id="reader" className="w-full h-full"></div>
 
             {error && (error.includes('กล้อง') || error.includes('Permission') || error.includes('found')) && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 text-white p-8 text-center z-20">
-                    <Camera size={48} className="mb-4 opacity-50"/>
-                    <p className="mb-4 font-bold">{error}</p>
-                    <p className="text-xs text-slate-400 mb-6">หากใช้บนมือถือ โปรดตรวจสอบว่าอนุญาตให้เบราว์เซอร์เข้าถึงกล้องแล้ว</p>
-                    <button onClick={handleRetryCamera} className="bg-white text-slate-900 px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-slate-200 transition-colors">
-                        <RefreshCw size={18}/> ลองเปิดกล้องใหม่
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-stone-900/95 text-white p-8 text-center z-20 backdrop-blur-sm">
+                    <Camera size={44} className="mb-3 opacity-60 text-indigo-400"/>
+                    <p className="mb-3 font-bold text-sm leading-relaxed">{error}</p>
+                    <p className="text-xs text-stone-400 mb-5 max-w-xs leading-relaxed">หากใช้บนมือถือ โปรดตรวจสอบว่าได้อนุญาตให้เบราว์เซอร์เข้าถึงกล้องและรีเฟรชหน้าจอแล้ว</p>
+                    <button 
+                        onClick={handleRetryCamera} 
+                        className="btn btn-secondary font-bold text-xs flex items-center gap-2 hover:-translate-y-0.5 active:translate-y-0 bg-white text-stone-900 border-none hover:bg-stone-200 shadow-md"
+                    >
+                        <RefreshCw size={15}/> ลองเปิดกล้องใหม่
                     </button>
                 </div>
             )}
          </div>
 
-         <div className="p-8 space-y-6 relative -mt-4 bg-white rounded-t-3xl z-10">
+         <div className="p-6 space-y-5 relative -mt-4 bg-white rounded-t-3xl border-t border-white/60 z-10 shadow-inner">
             <form onSubmit={(e) => handleSearch(e)} className="relative">
                 <input 
                     ref={inputRef}
                     type="text" 
-                    className="w-full pl-12 pr-4 py-4 text-lg border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all font-mono font-bold text-center tracking-wider uppercase"
-                    placeholder="SCANNING..."
+                    className="w-full pl-12 pr-12 py-3.5 text-lg border-2 border-stone-200 rounded-2xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100/50 outline-none transition-all font-mono font-bold text-center tracking-widest uppercase bg-stone-50/50"
+                    placeholder="รหัสหนังสือ / SCANNING..."
                     value={scanCode}
                     onChange={(e) => setScanCode(e.target.value)}
                     autoComplete="off"
                 />
-                <QrCode className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={24} />
+                <QrCode className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400" size={22} />
                 {scanCode && (
-                    <button type="button" onClick={handleClear} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
-                        <X size={20} />
+                    <button 
+                        type="button" 
+                        onClick={handleClear} 
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 p-1 hover:bg-stone-100 rounded-lg transition-colors"
+                    >
+                        <X size={18} />
                     </button>
                 )}
             </form>
@@ -281,70 +291,75 @@ const ScanReceive: React.FC<ScanReceiveProps> = ({ user }) => {
             <button 
                 onClick={() => handleSearch()} 
                 disabled={loading || !scanCode}
-                className="w-full bg-slate-800 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-slate-900 transition-all active:scale-95 disabled:opacity-50 disabled:active:scale-100 flex items-center justify-center gap-2"
+                className="w-full btn btn-primary py-3.5 rounded-xl font-bold hover:-translate-y-0.5 active:translate-y-0 shadow-lg shadow-indigo-100 flex items-center justify-center gap-2"
             >
-                {loading ? <Loader2 className="animate-spin" size={20}/> : <Search size={20}/>} ค้นหาด้วยรหัส
+                {loading ? <Loader2 className="animate-spin" size={18}/> : <Search size={18}/>} ค้นหาเอกสาร
             </button>
 
             {error && (!error.includes('กล้อง') && !error.includes('Permission') && !error.includes('found')) && (
-                <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded-xl flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
-                    <AlertCircle size={24} className="shrink-0"/>
-                    <span className="font-bold">{error}</span>
+                <div className="bg-rose-50 border border-rose-200 text-rose-700 p-4 rounded-xl flex items-start gap-3 animate-fade-in-up">
+                    <AlertCircle size={20} className="shrink-0 text-rose-500 mt-0.5"/>
+                    <div className="text-xs font-bold leading-relaxed">{error}</div>
                 </div>
             )}
 
             {successMsg && (
-                <div className="bg-green-50 border border-green-200 text-green-600 p-4 rounded-xl flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
-                    <CheckCircle size={24} className="shrink-0"/>
-                    <span className="font-bold">{successMsg}</span>
+                <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 p-4 rounded-xl flex items-start gap-3 animate-fade-in-up">
+                    <CheckCircle size={20} className="shrink-0 text-emerald-500 mt-0.5"/>
+                    <div className="text-xs font-bold leading-relaxed">{successMsg}</div>
                 </div>
             )}
          </div>
       </div>
 
       {doc && (
-        <div className="bg-white rounded-2xl shadow-xl border border-blue-100 overflow-hidden animate-in zoom-in-95 duration-300">
-            <div className="bg-blue-600 px-6 py-4 flex justify-between items-center text-white">
-                <h3 className="font-bold flex items-center gap-2"><CheckCircle size={20}/> พบเอกสารในระบบ</h3>
+        <div className="glass-card border border-indigo-100/70 overflow-hidden shadow-xl animate-fade-in-scale">
+            <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-violet-600 px-6 py-4 flex justify-between items-center text-white">
+                <h3 className="font-bold flex items-center gap-2 text-sm"><CheckCircle size={18}/> พบเอกสารในระบบสารบรรณ</h3>
                 <StatusBadge status={doc.status} />
             </div>
-            <div className="p-6 space-y-4">
+            <div className="p-6 space-y-5">
                 <div>
-                    <h2 className="text-xl font-bold text-slate-800 mb-1">{doc.subject}</h2>
-                    <p className="text-slate-500 text-sm">เลขที่หนังสือ: <span className="font-bold text-slate-700">{doc.external_book_no || '-'}</span> | ลงวันที่: {new Date(doc.doc_date).toLocaleDateString('th-TH')}</p>
+                    <h2 className="text-lg font-bold text-stone-850 mb-1 leading-snug">{doc.subject}</h2>
+                    <p className="text-stone-400 text-xs font-medium">
+                        เลขที่หนังสือ: <span className="font-bold text-stone-600">{doc.external_book_no || '-'}</span> | ลงวันที่: {new Date(doc.doc_date).toLocaleDateString('th-TH')}
+                    </p>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-100 text-sm">
-                    <div>
-                        <p className="text-slate-400 font-bold text-[10px] uppercase">จากหน่วยงาน</p>
-                        <p className="font-bold text-slate-800">{doc.from_origin}</p>
+                <div className="grid grid-cols-2 gap-4 bg-stone-50/50 p-4 rounded-2xl border border-stone-200/50 text-xs">
+                    <div className="space-y-1">
+                        <p className="text-stone-400 font-bold uppercase tracking-wider text-[9px]">จากหน่วยงานต้นทาง</p>
+                        <p className="font-bold text-stone-700">{doc.from_origin}</p>
                     </div>
-                    <div>
-                        <p className="text-slate-400 font-bold text-[10px] uppercase">ถึงเจ้าหน้าที่</p>
-                        <p className="font-bold text-slate-800">{doc.recipient_name}</p>
+                    <div className="space-y-1">
+                        <p className="text-stone-400 font-bold uppercase tracking-wider text-[9px]">ถึงเจ้าหน้าที่ผู้รับ</p>
+                        <p className="font-bold text-stone-700">{doc.recipient_name}</p>
                     </div>
-                    <div>
-                        <p className="text-slate-400 font-bold text-[10px] uppercase">Tracking Code</p>
-                        <p className="font-mono font-bold text-blue-600">{doc.tracking_code}</p>
+                    <div className="space-y-1">
+                        <p className="text-stone-400 font-bold uppercase tracking-wider text-[9px]">Tracking Code</p>
+                        <p className="font-mono font-extrabold text-indigo-600">{doc.tracking_code}</p>
                     </div>
-                    <div>
-                        <p className="text-slate-400 font-bold text-[10px] uppercase">เลขรับปัจจุบัน</p>
-                        <p className="font-bold text-slate-800">{doc.book_no ? `${doc.book_no}/${doc.book_year}` : '-'}</p>
+                    <div className="space-y-1">
+                        <p className="text-stone-400 font-bold uppercase tracking-wider text-[9px]">เลขรับในระบบสารบรรณ</p>
+                        <p className="font-bold text-stone-700">{doc.book_no ? `${doc.book_no}/${doc.book_year}` : '-'}</p>
                     </div>
                 </div>
 
-                <div className="pt-2">
+                <div className="pt-1">
                     {doc.status === DocStatus.REGISTERED ? (
-                         <button disabled className="w-full bg-slate-100 text-slate-400 py-3 rounded-xl font-bold cursor-not-allowed border border-slate-200">
-                            เอกสารนี้ถูกรับเข้าระบบแล้ว
+                         <button 
+                            disabled 
+                            className="w-full btn btn-secondary text-stone-400 bg-stone-100 hover:bg-stone-100 border border-stone-200 font-bold py-3.5 rounded-xl cursor-not-allowed text-xs"
+                         >
+                            เอกสารนี้ถูกดำเนินการรับเข้าระบบเรียบร้อยแล้ว
                          </button>
                     ) : (
                         <button 
                             onClick={handleConfirmReceive}
                             disabled={processing}
-                            className="w-full bg-green-600 text-white py-4 rounded-xl font-bold shadow-lg hover:bg-green-700 transition-all active:scale-95 flex items-center justify-center gap-2 text-lg"
+                            className="w-full btn btn-success py-3.5 rounded-xl font-bold shadow-lg shadow-emerald-200/50 flex items-center justify-center gap-2 hover:-translate-y-0.5 active:translate-y-0 text-sm"
                         >
-                            {processing ? <Loader2 className="animate-spin" size={24}/> : <CheckCircle size={24}/>} ยืนยันการรับหนังสือ (Register)
+                            {processing ? <Loader2 className="animate-spin" size={20}/> : <CheckCircle size={20}/>} ยืนยันการรับหนังสือ (Register Document)
                         </button>
                     )}
                 </div>

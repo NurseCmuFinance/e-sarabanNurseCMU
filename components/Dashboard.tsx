@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { FileText, Inbox, CheckCircle, XCircle, Search, Plus, Loader2, Link, Clock, AlertCircle, Zap, ChevronLeft, ChevronRight, ListFilter, ArrowRight, ShieldAlert, Check, Layers, CheckSquare } from 'lucide-react';
 import { Document, DashboardStats, UserRole, DocStatus, Profile, DocPriority } from '../types';
@@ -124,7 +123,8 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
   const filteredDocs = regularDocs.filter(doc => 
     doc.subject.toLowerCase().includes(searchTerm.toLowerCase()) || 
     (doc.book_no && doc.book_no.toString().includes(searchTerm)) ||
-    (doc.external_book_no && doc.external_book_no.toLowerCase().includes(searchTerm.toLowerCase()))
+    (doc.external_book_no && doc.external_book_no.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (doc.recipient_name && doc.recipient_name.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   const paginatedDocs = paginate(filteredDocs, tablePage, tableRowsPerPage);
@@ -161,13 +161,13 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
       const totalPages = rowsPerPage === -1 ? 1 : Math.ceil(totalItems / rowsPerPage);
       
       return (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4 text-sm text-slate-500">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4 text-sm text-slate-500 font-medium">
             <div className="flex items-center gap-2">
                 <span>แสดง {label}:</span>
                 <select 
                     value={rowsPerPage} 
                     onChange={(e) => { setRowsPerPage(Number(e.target.value)); setPage(1); }}
-                    className="border border-slate-300 rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium"
+                    className="modern-select !py-1.5 !px-3 !pr-9 w-20 text-xs font-semibold bg-white/50 border border-slate-200 rounded-lg outline-none"
                 >
                     <option value={10}>10</option>
                     <option value={25}>25</option>
@@ -178,20 +178,20 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
                 <span>รายการ</span>
             </div>
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
                 <span>หน้า {page} จาก {totalPages} ({totalItems} รายการ)</span>
-                <div className="flex rounded-lg border border-slate-300 overflow-hidden">
+                <div className="flex rounded-lg border border-slate-200 overflow-hidden bg-white/60 shadow-sm backdrop-blur-sm">
                     <button 
                         onClick={() => setPage(Math.max(1, page - 1))}
                         disabled={page === 1}
-                        className="px-3 py-1 hover:bg-slate-100 disabled:opacity-50 disabled:bg-slate-50 border-r border-slate-300"
+                        className="p-2 hover:bg-slate-100/80 disabled:opacity-50 disabled:bg-transparent border-r border-slate-200 transition-colors"
                     >
                         <ChevronLeft size={16}/>
                     </button>
                     <button 
                         onClick={() => setPage(Math.min(totalPages, page + 1))}
                         disabled={page === totalPages || totalPages === 0}
-                        className="px-3 py-1 hover:bg-slate-100 disabled:opacity-50 disabled:bg-slate-50"
+                        className="p-2 hover:bg-slate-100/80 disabled:opacity-50 disabled:bg-transparent transition-colors"
                     >
                         <ChevronRight size={16}/>
                     </button>
@@ -202,58 +202,81 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in-up">
+      {/* Header section */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">แดชบอร์ด (Dashboard)</h1>
-          <p className="text-slate-500 font-medium">ยินดีต้อนรับคุณ {user.full_name}</p>
+          <h1 className="text-2xl font-black text-slate-800 tracking-tight">แดชบอร์ด (Dashboard)</h1>
+          <p className="text-slate-500 font-semibold mt-0.5">ยินดีต้อนรับคุณ {user.full_name}</p>
         </div>
         
         <div className="flex gap-2">
             {user.role !== UserRole.USER && (
-                <button onClick={() => navigate('/register')} className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-lg transition-all active:scale-95">
+                <button 
+                  onClick={() => navigate('/register')} 
+                  className="btn btn-primary shadow-lg shadow-indigo-500/10 active:scale-95"
+                >
                     <Plus size={20} /> รับหนังสือใหม่
                 </button>
             )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
-          <div className="p-3 bg-blue-50 text-blue-600 rounded-xl"><Inbox size={24} /></div>
-          <div><p className="text-sm font-bold text-slate-400">ทั้งหมด</p><p className="text-2xl font-bold text-slate-800">{stats?.totalReceived || 0}</p></div>
+      {/* Stat cards section */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 stagger-children">
+        <div className="stat-card glass-card flex items-center gap-4">
+          <div className="stat-icon bg-indigo-500/10 text-indigo-600"><Inbox size={24} /></div>
+          <div>
+            <p className="stat-label">ทั้งหมด</p>
+            <p className="stat-value text-slate-800">{stats?.totalReceived || 0}</p>
+          </div>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
-          <div className="p-3 bg-amber-50 text-amber-600 rounded-xl"><Clock size={24} /></div>
-          <div><p className="text-sm font-bold text-slate-400">รอกดรับ</p><p className="text-2xl font-bold text-slate-800">{stats?.pendingAccept || 0}</p></div>
+        <div className="stat-card glass-card flex items-center gap-4">
+          <div className="stat-icon bg-amber-500/10 text-amber-600"><Clock size={24} /></div>
+          <div>
+            <p className="stat-label">รอกดรับ</p>
+            <p className="stat-value text-slate-800">{stats?.pendingAccept || 0}</p>
+          </div>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
-          <div className="p-3 bg-green-50 text-green-600 rounded-xl"><CheckCircle size={24} /></div>
-          <div><p className="text-sm font-bold text-slate-400">อนุมัติแล้ว</p><p className="text-2xl font-bold text-slate-800">{stats?.completed || 0}</p></div>
+        <div className="stat-card glass-card flex items-center gap-4">
+          <div className="stat-icon bg-emerald-500/10 text-emerald-600"><CheckCircle size={24} /></div>
+          <div>
+            <p className="stat-label">อนุมัติแล้ว</p>
+            <p className="stat-value text-slate-800">{stats?.completed || 0}</p>
+          </div>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
-          <div className="p-3 bg-red-50 text-red-600 rounded-xl"><XCircle size={24} /></div>
-          <div><p className="text-sm font-bold text-slate-400">ยกเลิก</p><p className="text-2xl font-bold text-slate-800">{stats?.cancelled || 0}</p></div>
+        <div className="stat-card glass-card flex items-center gap-4">
+          <div className="stat-icon bg-rose-500/10 text-rose-600"><XCircle size={24} /></div>
+          <div>
+            <p className="stat-label">ยกเลิก</p>
+            <p className="stat-value text-slate-800">{stats?.cancelled || 0}</p>
+          </div>
         </div>
       </div>
 
       {/* ADMIN Verification Queue Section */}
       {user.role === UserRole.ADMIN && pendingVerifyDocs.length > 0 && (
-         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-6 border-l-4 border-l-indigo-500">
-            <div className="p-5 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-indigo-50/50">
+         <div className="glass-card overflow-hidden border-l-4 border-l-indigo-500 animate-fade-in-up">
+            <div className="p-5 border-b border-slate-200/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-indigo-50/20 backdrop-blur-md">
                 <h2 className="font-bold text-slate-800 text-lg flex items-center gap-2">
                     <ShieldAlert className="text-indigo-600" size={24}/> 
                     คำร้องจากบุคคลทั่วไป (รอตรวจสอบ) ({pendingVerifyDocs.length})
                 </h2>
-                <div className="relative">
+                <div className="relative w-full sm:w-auto">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                    <input type="text" placeholder="ค้นหาคำร้อง..." className="w-full sm:w-64 pl-9 pr-4 py-2.5 text-sm border border-indigo-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 bg-white shadow-sm" value={verifySearchTerm} onChange={(e) => { setVerifySearchTerm(e.target.value); setVerifyPage(1); }} />
+                    <input 
+                      type="text" 
+                      placeholder="ค้นหาคำร้อง..." 
+                      className="modern-input !py-2 pl-9 w-full sm:w-64" 
+                      value={verifySearchTerm} 
+                      onChange={(e) => { setVerifySearchTerm(e.target.value); setVerifyPage(1); }} 
+                    />
                 </div>
             </div>
 
             <div className="overflow-x-auto">
-                <table className="w-full text-sm text-left">
-                  <thead className="bg-indigo-50 text-indigo-900 font-bold border-b border-indigo-100">
+                <table className="modern-table">
+                  <thead>
                     <tr>
                       <th className="px-6 py-4">วันที่ยื่น</th>
                       <th className="px-6 py-4">เรื่อง</th>
@@ -262,19 +285,23 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
                       <th className="px-6 py-4 text-right">ดำเนินการ</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody>
                     {paginate(filteredVerifyDocs, verifyPage, verifyRowsPerPage).map((doc) => (
-                        <tr key={doc.id} className="hover:bg-indigo-50/30 cursor-pointer group transition-colors" onClick={() => navigate(`/document/${doc.id}`)}>
+                        <tr 
+                          key={doc.id} 
+                          className="cursor-pointer group hover:bg-indigo-50/10" 
+                          onClick={() => navigate(`/document/${doc.id}`)}
+                        >
                             <td className="px-6 py-4 text-slate-600 font-medium whitespace-nowrap">{new Date(doc.created_at).toLocaleDateString('th-TH')}</td>
                             <td title={doc.subject} className="px-6 py-4 text-slate-800 truncate max-w-[300px] font-bold group-hover:text-indigo-700">
                                 {doc.subject}
                             </td>
                             <td className="px-6 py-4 text-slate-600">{doc.from_origin}</td>
                             <td className="px-6 py-4 font-mono text-indigo-600 font-bold">{doc.tracking_code}</td>
-                            <td className="px-6 py-4 text-right">
+                            <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
                                 <button 
                                     onClick={(e) => handleVerify(doc, e)} 
-                                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-md active:scale-95 transition-all flex items-center gap-1 ml-auto"
+                                    className="btn btn-sm btn-primary shadow-sm shadow-indigo-500/10"
                                 >
                                     <Check size={14}/> ตรวจสอบ
                                 </button>
@@ -286,30 +313,36 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
             </div>
 
             {!loading && filteredVerifyDocs.length > 0 && (
-                 <div className="px-6 py-4 border-t border-slate-200 bg-slate-50">
+                 <div className="px-6 py-4 border-t border-slate-200/50 bg-slate-50/30">
                     {renderPaginationControls(filteredVerifyDocs.length, verifyPage, setVerifyPage, verifyRowsPerPage, setVerifyRowsPerPage, "รายการ")}
                  </div>
             )}
          </div>
       )}
 
-      {/* 4. Incoming Tasks Section (Table View) */}
+      {/* Incoming Tasks Section (Table View) */}
       {incomingTasks.length > 0 && (
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-6 border-l-4 border-l-amber-500">
-              <div className="p-5 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-amber-50/50">
+          <div className="glass-card overflow-hidden border-l-4 border-l-amber-500 animate-fade-in-up">
+              <div className="p-5 border-b border-slate-200/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-amber-50/20 backdrop-blur-md">
                   <h2 className="font-bold text-slate-800 text-lg flex items-center gap-2">
                       <AlertCircle className="text-amber-500" size={24}/> 
                       หนังสือรอการตอบรับ ({incomingTasks.length})
                   </h2>
-                  <div className="relative">
+                  <div className="relative w-full sm:w-auto">
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                      <input type="text" placeholder="ค้นหาในงานที่รอ..." className="w-full sm:w-64 pl-9 pr-4 py-2.5 text-sm border border-amber-200 rounded-xl outline-none focus:ring-2 focus:ring-amber-500 bg-white shadow-sm" value={taskSearchTerm} onChange={(e) => { setTaskSearchTerm(e.target.value); setTaskPage(1); }} />
+                      <input 
+                        type="text" 
+                        placeholder="ค้นหาในงานที่รอ..." 
+                        className="modern-input !py-2 pl-9 w-full sm:w-64" 
+                        value={taskSearchTerm} 
+                        onChange={(e) => { setTaskSearchTerm(e.target.value); setTaskPage(1); }} 
+                      />
                   </div>
               </div>
               
               <div className="overflow-x-auto">
-                <table className="w-full text-sm text-left">
-                  <thead className="bg-amber-50 text-slate-600 font-bold border-b border-amber-100">
+                <table className="modern-table">
+                  <thead>
                     <tr>
                       <th className="px-6 py-4">วันที่ลง</th>
                       <th className="px-6 py-4">เรื่อง</th>
@@ -318,27 +351,34 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
                       <th className="px-6 py-4 text-right">ดำเนินการ</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody>
                     {paginate(filteredTasks, taskPage, taskRowsPerPage).map((doc) => {
                         const priority = doc.priority || DocPriority.NORMAL;
                         const priorityConfig = PRIORITY_CONFIG[priority];
                         return (
-                            <tr key={doc.id} className="hover:bg-amber-50/30 cursor-pointer group transition-colors" onClick={() => navigate(`/document/${doc.id}`)}>
+                            <tr 
+                              key={doc.id} 
+                              className="cursor-pointer group hover:bg-amber-50/10" 
+                              onClick={() => navigate(`/document/${doc.id}`)}
+                            >
                             <td className="px-6 py-4 text-slate-600 font-medium whitespace-nowrap">{new Date(doc.doc_date).toLocaleDateString('th-TH')}</td>
                             <td title={doc.subject} className="px-6 py-4 text-slate-800 truncate max-w-[300px] font-bold group-hover:text-amber-700">
                                 {doc.subject}
-                                <div className="text-[10px] text-slate-400 font-normal mt-0.5">{doc.external_book_no || '-'}</div>
+                                <div className="text-[10px] text-slate-400 font-semibold mt-0.5">{doc.external_book_no || '-'}</div>
                             </td>
                             <td className="px-6 py-4 text-slate-600">{doc.from_origin}</td>
                             <td className="px-6 py-4">
-                                <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-lg text-[10px] font-bold shadow-sm ${priorityConfig.color}`}>
+                                <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-bold shadow-sm ${priorityConfig.color}`}>
                                     {priority !== DocPriority.NORMAL && <Zap size={10}/>}
                                     {priorityConfig.label}
                                 </span>
                             </td>
-                            <td className="px-6 py-4 text-right">
-                                <button className="p-2 rounded-full bg-amber-100 text-amber-600 hover:bg-amber-200 transition-colors">
-                                    <ArrowRight size={18}/>
+                            <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
+                                <button 
+                                  onClick={() => navigate(`/document/${doc.id}`)}
+                                  className="btn btn-icon btn-sm btn-secondary bg-amber-500/10 border-0 text-amber-600 hover:bg-amber-500/20"
+                                >
+                                    <ArrowRight size={16}/>
                                 </button>
                             </td>
                             </tr>
@@ -349,7 +389,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
               </div>
               
               {!loading && filteredTasks.length > 0 && (
-                 <div className="px-6 py-4 border-t border-slate-200 bg-slate-50">
+                 <div className="px-6 py-4 border-t border-slate-200/50 bg-slate-50/30">
                     {renderPaginationControls(filteredTasks.length, taskPage, setTaskPage, taskRowsPerPage, setTaskRowsPerPage, "รายการ")}
                  </div>
               )}
@@ -357,41 +397,47 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
       )}
 
       {/* Main Table Section */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-          <div className="p-5 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50/50">
+      <div className="glass-card overflow-hidden animate-fade-in-up">
+          <div className="p-5 border-b border-slate-200/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50/20 backdrop-blur-md">
             {isAdmin && selectedIds.length > 0 ? (
-                <div className="flex-1 flex items-center justify-between bg-green-50 px-4 py-2 rounded-xl border border-green-100 animate-in fade-in slide-in-from-top-2">
-                    <span className="font-bold text-green-700 text-sm flex items-center gap-2">
-                        <CheckSquare size={18}/> เลือกอยู่ {selectedIds.length} รายการ
+                <div className="flex-1 flex items-center justify-between bg-emerald-500/10 px-4 py-2.5 rounded-xl border border-emerald-500/20 animate-fade-in-down">
+                    <span className="font-bold text-emerald-700 text-sm flex items-center gap-2">
+                        <CheckSquare size={18} className="text-emerald-600"/> เลือกอยู่ {selectedIds.length} รายการ
                     </span>
                     <button 
                         onClick={handleBulkForceReceive}
                         disabled={bulkLoading}
-                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-md transition-all active:scale-95 flex items-center gap-2"
+                        className="btn btn-sm btn-success shadow-md shadow-emerald-500/10"
                     >
                         {bulkLoading ? <Loader2 className="animate-spin" size={16}/> : <CheckCircle size={16}/>} รับเรื่อง
                     </button>
                 </div>
             ) : (
                 <>
-                    <h2 className="font-bold text-slate-800 text-lg flex items-center gap-2"><ListFilter size={20}/> รายการหนังสือในระบบ</h2>
-                    <div className="relative">
+                    <h2 className="font-bold text-slate-800 text-lg flex items-center gap-2"><ListFilter size={20} className="text-indigo-500"/> รายการหนังสือในระบบ</h2>
+                    <div className="relative w-full sm:w-auto">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                        <input type="text" placeholder="ค้นหาชื่อเรื่อง, เลขที่..." className="w-full sm:w-64 pl-9 pr-4 py-2.5 text-sm border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm" value={searchTerm} onChange={(e) => { setSearchTerm(e.target.value); setTablePage(1); }} />
+                        <input 
+                          type="text" 
+                          placeholder="ค้นหาชื่อเรื่อง, เลขที่..." 
+                          className="modern-input !py-2 pl-9 w-full sm:w-64" 
+                          value={searchTerm} 
+                          onChange={(e) => { setSearchTerm(e.target.value); setTablePage(1); }} 
+                        />
                     </div>
                 </>
             )}
           </div>
           
           <div className="overflow-x-auto min-h-[300px]">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-slate-100 text-slate-600 font-bold border-b">
+            <table className="modern-table">
+              <thead>
                 <tr>
                   {isAdmin && (
                       <th className="px-4 py-4 w-12 text-center">
                           <input 
                             type="checkbox" 
-                            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                            className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
                             checked={paginatedDocs.length > 0 && paginatedDocs.every(d => selectedIds.includes(d.id))}
                             onChange={() => toggleSelectAll(paginatedDocs)}
                           />
@@ -400,40 +446,61 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
                   <th className="px-6 py-4">เลขรับ</th>
                   <th className="px-6 py-4">เรื่อง</th>
                   <th className="px-6 py-4">ความเร่งด่วน</th>
+                  <th className="px-6 py-4">เจ้าหน้าที่ผู้รับ</th>
                   <th className="px-6 py-4">สถานะ</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody>
                 {loading ? (
-                  <tr><td colSpan={isAdmin ? 5 : 4} className="px-6 py-12 text-center"><Loader2 className="animate-spin mx-auto text-blue-600" /></td></tr>
+                  <tr>
+                    <td colSpan={isAdmin ? 6 : 5} className="px-6 py-20 text-center">
+                      <div className="flex flex-col items-center justify-center gap-3">
+                        <Loader2 className="animate-spin text-indigo-500" size={32} />
+                        <span className="text-sm font-semibold text-slate-400">กำลังโหลดข้อมูล...</span>
+                      </div>
+                    </td>
+                  </tr>
                 ) : filteredDocs.length === 0 ? (
-                    <tr><td colSpan={isAdmin ? 5 : 4} className="px-6 py-20 text-center text-slate-400 font-bold italic">ไม่พบข้อมูลในรายการ</td></tr>
+                    <tr>
+                      <td colSpan={isAdmin ? 6 : 5} className="px-6 py-24 text-center">
+                        <div className="flex flex-col items-center justify-center gap-2 text-slate-400">
+                          <FileText size={48} className="text-slate-300 stroke-[1.5] mb-2"/>
+                          <span className="font-bold text-slate-500">ไม่พบข้อมูลในรายการ</span>
+                          <span className="text-xs">ไม่มีเอกสารที่ตรงตามเงื่อนไขการค้นหาของคุณ</span>
+                        </div>
+                      </td>
+                    </tr>
                 ) : paginatedDocs.map((doc) => {
                     const priority = doc.priority || DocPriority.NORMAL;
                     const priorityConfig = PRIORITY_CONFIG[priority];
                     return (
-                        <tr key={doc.id} className={`hover:bg-blue-50/50 cursor-pointer group transition-colors ${selectedIds.includes(doc.id) ? 'bg-blue-50' : ''}`} onClick={() => navigate(`/document/${doc.id}`)}>
+                        <tr 
+                          key={doc.id} 
+                          className={`cursor-pointer group hover:bg-indigo-50/10 ${selectedIds.includes(doc.id) ? 'bg-indigo-500/5' : ''}`} 
+                          onClick={() => navigate(`/document/${doc.id}`)}
+                        >
                         {isAdmin && (
                             <td className="px-4 py-4 text-center" onClick={(e) => e.stopPropagation()}>
                                 <input 
                                     type="checkbox" 
-                                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                                    className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
                                     checked={selectedIds.includes(doc.id)}
                                     onChange={() => toggleSelectOne(doc.id)}
                                 />
                             </td>
                         )}
-                        <td className="px-6 py-4 font-bold text-blue-600 whitespace-nowrap">{doc.book_no ? `${doc.book_no}/${doc.book_year}` : '-'}</td>
-                        <td title={doc.subject} className="px-6 py-4 text-slate-800 truncate max-w-[300px] group-hover:text-blue-700 font-bold">
+                        <td className="px-6 py-4 font-bold text-indigo-600 whitespace-nowrap">{doc.book_no ? `${doc.book_no}/${doc.book_year}` : '-'}</td>
+                        <td title={doc.subject} className="px-6 py-4 text-slate-800 truncate max-w-[300px] group-hover:text-indigo-700 font-bold">
                             {doc.subject}
-                            <div className="text-[10px] text-slate-400 font-normal mt-0.5">{doc.external_book_no}</div>
+                            <div className="text-[10px] text-slate-400 font-semibold mt-0.5">{doc.external_book_no}</div>
                         </td>
                         <td className="px-6 py-4">
-                            <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-lg text-[10px] font-bold shadow-sm ${priorityConfig.color}`}>
+                            <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-bold shadow-sm ${priorityConfig.color}`}>
                                 {priority !== DocPriority.NORMAL && <Zap size={10}/>}
                                 {priorityConfig.label}
                             </span>
                         </td>
+                        <td className="px-6 py-4 font-semibold text-slate-600 whitespace-nowrap">{doc.recipient_name || '-'}</td>
                         <td className="px-6 py-4"><StatusBadge status={doc.status} /></td>
                         </tr>
                     );
@@ -445,7 +512,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 
           {/* Pagination for Table */}
           {!loading && filteredDocs.length > 0 && (
-             <div className="px-6 py-4 border-t border-slate-200 bg-slate-50">
+             <div className="px-6 py-4 border-t border-slate-200/50 bg-slate-50/30">
                 {renderPaginationControls(filteredDocs.length, tablePage, setTablePage, tableRowsPerPage, setTableRowsPerPage, "แถว")}
              </div>
           )}
