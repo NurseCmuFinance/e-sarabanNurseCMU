@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Camera, Upload, Loader2, CheckCircle2, AlertCircle, RefreshCw, Save, X, FileText, Image as ImageIcon } from 'lucide-react';
+import { Camera, Upload, Loader2, CheckCircle2, AlertCircle, RefreshCw, Save, X, FileText, Image as ImageIcon, FileCheck } from 'lucide-react';
 import { GoogleGenAI, Type } from '@google/genai';
 import { createDocument, getUsersForSelect, getMasterItems } from '../services/mockService';
-import { Profile, DocPriority } from '../types';
+import { Profile, DocPriority, Document } from '../types';
 import SearchableSelect from './SearchableSelect';
 
 interface SmartOCRRegistrationProps {
@@ -16,6 +16,8 @@ const SmartOCRRegistration: React.FC<SmartOCRRegistrationProps> = ({ user }) => 
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [successDoc, setSuccessDoc] = useState<Document | null>(null);
+  const [countdown, setCountdown] = useState(10);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -24,6 +26,7 @@ const SmartOCRRegistration: React.FC<SmartOCRRegistrationProps> = ({ user }) => 
     subject: '',
     from_origin: '',
     to_recipient_id: '',
+    recipient_name: '',
     remark: '',
     priority: DocPriority.NORMAL,
   });
@@ -31,6 +34,24 @@ const SmartOCRRegistration: React.FC<SmartOCRRegistrationProps> = ({ user }) => 
   const [users, setUsers] = useState<any[]>([]);
   const [agencies, setAgencies] = useState<any[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Effect for Auto-Countdown when successDoc is present
+  useEffect(() => {
+    let timer: any;
+    if (successDoc) {
+        timer = setInterval(() => {
+            setCountdown(prev => {
+                if (prev <= 1) {
+                    clearInterval(timer);
+                    handleReset();
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+    }
+    return () => { if (timer) clearInterval(timer); };
+  }, [successDoc]);
 
   useEffect(() => {
     loadData();
@@ -219,18 +240,13 @@ const SmartOCRRegistration: React.FC<SmartOCRRegistrationProps> = ({ user }) => 
         subject: formData.subject,
         from_origin: formData.from_origin,
         to_recipient_id: formData.to_recipient_id,
+        recipient_name: formData.recipient_name,
         remark: formData.remark,
         priority: formData.priority,
       };
 
-      await createDocument(payload, user);
-      
-      setSuccess("บันทึกข้อมูลเข้าระบบสารบรรณเรียบร้อยแล้ว");
-      
-      // Reset form after 2 seconds
-      setTimeout(() => {
-        handleReset();
-      }, 2000);
+      const saved = await createDocument(payload, user);
+      setSuccessDoc(saved);
 
     } catch (err: any) {
       setError(err.message);
@@ -248,11 +264,14 @@ const SmartOCRRegistration: React.FC<SmartOCRRegistrationProps> = ({ user }) => 
       subject: '',
       from_origin: '',
       to_recipient_id: '',
+      recipient_name: '',
       remark: '',
       priority: DocPriority.NORMAL,
     });
     setError(null);
     setSuccess(null);
+    setSuccessDoc(null);
+    setCountdown(10);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -426,7 +445,7 @@ const SmartOCRRegistration: React.FC<SmartOCRRegistrationProps> = ({ user }) => 
               <SearchableSelect 
                   options={users.map(u => ({ id: u.id, label: u.full_name, subLabel: u.department_name || 'ไม่ระบุหน่วยงาน' }))}
                   value={formData.to_recipient_id}
-                  onChange={(val) => setFormData({...formData, to_recipient_id: val})}
+                  onChange={(val, label) => setFormData({...formData, to_recipient_id: val, recipient_name: label || ''})}
                   placeholder="พิมพ์ค้นหาชื่อเจ้าหน้าที่ผู้รับ..."
               />
             </div>
@@ -481,6 +500,43 @@ const SmartOCRRegistration: React.FC<SmartOCRRegistrationProps> = ({ user }) => 
           </div>
         </div>
       </div>
+
+      {successDoc && (
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[300] flex items-center justify-center p-4 animate-in fade-in duration-300">
+              <div className="glass-modal max-w-md w-full overflow-hidden shadow-2xl animate-fade-in-scale">
+                  <div className="bg-gradient-to-br from-emerald-500 to-teal-650 p-10 text-center text-white relative">
+                      <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <FileCheck size={40} className="animate-bounce text-white" />
+                      </div>
+                      <h2 className="text-2xl font-black tracking-tight">ลงทะเบียนเรียบร้อย!</h2>
+                  </div>
+                  <div className="p-10 space-y-6 text-center">
+                      <div className="grid grid-cols-2 gap-4">
+                          <div className="bg-white/80 backdrop-blur-sm p-4 rounded-2xl border border-slate-200/50 text-center shadow-sm">
+                            <p className="text-[10px] font-black text-slate-400 mb-1 uppercase">เลขรับ</p>
+                            <p className="text-xl font-black text-indigo-650">{successDoc.book_no}/{successDoc.book_year}</p>
+                          </div>
+                          <div className="bg-white/80 backdrop-blur-sm p-4 rounded-2xl border border-slate-200/50 text-center shadow-sm">
+                            <p className="text-[10px] font-black text-slate-400 mb-1 uppercase">TRACKING CODE</p>
+                            <div className="flex items-center justify-center gap-2">
+                              <p className="text-lg font-mono font-bold text-slate-800">{successDoc.tracking_code}</p>
+                            </div>
+                          </div>
+                      </div>
+                      
+                      <button 
+                        onClick={handleReset} 
+                        className="w-full btn btn-primary !py-4 rounded-2xl shadow-xl shadow-indigo-500/10 flex items-center justify-center gap-2"
+                      >
+                        ตกลง ({countdown})
+                      </button>
+                      <p className="text-xs text-slate-450 font-semibold text-center animate-pulse">
+                        ระบบจะดำเนินการต่ออัตโนมัติใน {countdown} วินาที
+                      </p>
+                  </div>
+              </div>
+          </div>
+      )}
     </div>
   );
 };
