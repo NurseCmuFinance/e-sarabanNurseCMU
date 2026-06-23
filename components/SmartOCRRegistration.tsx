@@ -134,33 +134,51 @@ const SmartOCRRegistration: React.FC<SmartOCRRegistrationProps> = ({ user }) => 
         4. จาก (from_origin): มองหาหลังคำว่า "ส่วนงาน" หรือ "ส่วนราชการ" ตัดคำว่า "โทร.", "โทรศัพท์", "โทรสาร" และตัวเลขเบอร์โทรที่ตามหลังทิ้งทั้งหมด เอาเฉพาะชื่อหน่วยงาน
       `;
 
-      const response = await ai.models.generateContent({
-        model: 'gemini-3.5-flash',
-        contents: {
-          parts: [
-            {
-              inlineData: {
-                mimeType: file.type,
-                data: base64Data,
-              },
+      const modelsToTry = ['gemini-3.5-flash', 'gemini-2.5-flash', 'gemini-1.5-flash'];
+      let response = null;
+      let lastError = null;
+
+      for (const modelName of modelsToTry) {
+        try {
+          response = await ai.models.generateContent({
+            model: modelName,
+            contents: {
+              parts: [
+                {
+                  inlineData: {
+                    mimeType: file.type,
+                    data: base64Data,
+                  },
+                },
+                { text: prompt }
+              ]
             },
-            { text: prompt }
-          ]
-        },
-        config: {
-          responseMimeType: "application/json",
-          responseSchema: {
-            type: Type.OBJECT,
-            properties: {
-              external_book_no: { type: Type.STRING, description: "เลขที่หนังสือ (ตัดตัวอักษรไทยด้านหน้าออก แปลงเลขไทยเป็นอารบิก)" },
-              doc_date: { type: Type.STRING, description: "วันที่ (เช่น 23 กุมภาพันธ์ 2569 แปลงเลขไทยเป็นอารบิก)" },
-              subject: { type: Type.STRING, description: "เรื่อง (แปลงเลขไทยเป็นอารบิก)" },
-              from_origin: { type: Type.STRING, description: "จากหน่วยงาน (ตัดเบอร์โทรออก)" }
-            },
-            required: ["external_book_no", "doc_date", "subject", "from_origin"]
+            config: {
+              responseMimeType: "application/json",
+              responseSchema: {
+                type: Type.OBJECT,
+                properties: {
+                  external_book_no: { type: Type.STRING, description: "เลขที่หนังสือ (ตัดตัวอักษรไทยด้านหน้าออก แปลงเลขไทยเป็นอารบิก)" },
+                  doc_date: { type: Type.STRING, description: "วันที่ (เช่น 23 กุมภาพันธ์ 2569 แปลงเลขไทยเป็นอารบิก)" },
+                  subject: { type: Type.STRING, description: "เรื่อง (แปลงเลขไทยเป็นอารบิก)" },
+                  from_origin: { type: Type.STRING, description: "จากหน่วยงาน (ตัดเบอร์โทรออก)" }
+                },
+                required: ["external_book_no", "doc_date", "subject", "from_origin"]
+              }
+            }
+          });
+          if (response) {
+            break; // Success
           }
+        } catch (err: any) {
+          console.warn(`Model ${modelName} failed, trying next fallback model...`, err);
+          lastError = err;
         }
-      });
+      }
+
+      if (!response) {
+        throw lastError || new Error("ไม่สามารถประมวลผลรูปภาพได้ในขณะนี้เนื่องจากเซิร์ฟเวอร์ของ Google หนาแน่น");
+      }
 
       const jsonStr = response.text?.trim() || "{}";
       const extractedData = JSON.parse(jsonStr);
