@@ -115,7 +115,7 @@ const SmartOCRRegistration: React.FC<SmartOCRRegistrationProps> = ({ user }) => 
 
     try {
       const base64Data = await fileToBase64(file);
-      const apiKey = localStorage.getItem('gemini_api_key') || process.env.GEMINI_API_KEY;
+      const apiKey = localStorage.getItem('gemini_api_key') || import.meta.env.VITE_GEMINI_API_KEY;
       
       if (!apiKey) {
         throw new Error("ไม่พบ API Key สำหรับ Gemini กรุณาตั้งค่าในหน้าตั้งค่าการแจ้งเตือน (แท็บ Gemini API)");
