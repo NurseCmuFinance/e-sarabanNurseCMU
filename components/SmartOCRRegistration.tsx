@@ -134,7 +134,7 @@ const SmartOCRRegistration: React.FC<SmartOCRRegistrationProps> = ({ user }) => 
         4. จาก (from_origin): มองหาหลังคำว่า "ส่วนงาน" หรือ "ส่วนราชการ" ตัดคำว่า "โทร.", "โทรศัพท์", "โทรสาร" และตัวเลขเบอร์โทรที่ตามหลังทิ้งทั้งหมด เอาเฉพาะชื่อหน่วยงาน
       `;
 
-      const modelsToTry = ['gemini-3.5-flash', 'gemini-2.5-flash', 'gemini-1.5-flash'];
+      const modelsToTry = ['gemini-3.5-flash', 'gemini-3.1-flash-lite', 'gemini-2.5-flash'];
       let response = null;
       let lastError = null;
 
